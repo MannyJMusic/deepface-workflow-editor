@@ -51,6 +51,8 @@ interface DetectionPanelProps {
   importProgress?: number
   importMessage?: string
   isImporting?: boolean
+  processedCount?: number
+  totalCount?: number
 }
 
 const DetectionPanelNew: React.FC<DetectionPanelProps> = ({
@@ -96,7 +98,9 @@ const DetectionPanelNew: React.FC<DetectionPanelProps> = ({
   // Progress tracking
   importProgress = 0,
   importMessage = '',
-  isImporting = false
+  isImporting = false,
+  processedCount = 0,
+  totalCount = 0
 }) => {
   const [mode, setMode] = useState<'video_frame' | 'faces'>('faces')
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -336,6 +340,11 @@ const DetectionPanelNew: React.FC<DetectionPanelProps> = ({
                       style={{ width: `${importProgress}%` }}
                     />
                   </div>
+                  {processedCount !== undefined && totalCount !== undefined && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Processed: {processedCount}/{totalCount} images
+                    </div>
+                  )}
                 </div>
               )}
 

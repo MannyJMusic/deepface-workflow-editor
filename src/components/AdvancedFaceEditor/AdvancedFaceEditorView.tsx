@@ -41,6 +41,8 @@ const AdvancedFaceEditorView: React.FC = () => {
   })
   const [showSegmentation, setShowSegmentation] = useState(false)
   const [showAlignments, setShowAlignments] = useState(false)
+  const [allFaceData, setAllFaceData] = useState<Record<string, { landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }>>({})
+  const [faceDataImported, setFaceDataImported] = useState(false)
   const [showConsole, setShowConsole] = useState(false)
   const [showDetectionPanel, setShowDetectionPanel] = useState(true)
   const [selectedFaceId, setSelectedFaceId] = useState<string | null>(null)
@@ -61,6 +63,9 @@ const AdvancedFaceEditorView: React.FC = () => {
   const [importProgress, setImportProgress] = useState<number>(0)
   const [importMessage, setImportMessage] = useState<string>('')
   const [isImporting, setIsImporting] = useState<boolean>(false)
+  const [currentImage, setCurrentImage] = useState<string>('')
+  const [processedCount, setProcessedCount] = useState<number>(0)
+  const [totalCount, setTotalCount] = useState<number>(0)
 
   // Initialize settings from node parameters
   useEffect(() => {
@@ -79,6 +84,91 @@ const AdvancedFaceEditorView: React.FC = () => {
     const timestamp = new Date().toLocaleTimeString()
     setConsoleLogs(prev => [...prev, `[${timestamp}] ${message}`])
   }, [])
+
+  // WebSocket connection for real-time progress updates
+  useEffect(() => {
+    if (!currentNode?.id) return
+
+    let ws: WebSocket | null = null
+    let reconnectAttempts = 0
+    const maxReconnectAttempts = 3
+    const reconnectDelay = 2000
+
+    const connectWebSocket = () => {
+      try {
+        ws = new WebSocket('ws://localhost:8001/ws')
+        
+        ws.onopen = () => {
+          console.log('WebSocket connected for import progress')
+          reconnectAttempts = 0 // Reset on successful connection
+        }
+        
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data)
+            
+            // Handle import progress messages
+            if (data.type === 'import_progress' && data.node_id === currentNode.id) {
+              setImportProgress(data.progress)
+              setCurrentImage(data.current_image)
+              setProcessedCount(data.processed)
+              setTotalCount(data.total)
+              setImportMessage(data.message)
+              addConsoleLog(data.message)
+            }
+            
+            if (data.type === 'import_image_success' && data.node_id === currentNode.id) {
+              addConsoleLog(`✓ ${data.filename}: landmarks=${data.has_landmarks}, segmentation=${data.has_segmentation}`)
+            }
+            
+            if (data.type === 'import_image_failed' && data.node_id === currentNode.id) {
+              addConsoleLog(`✗ ${data.filename}: ${data.reason}`)
+            }
+            
+            if (data.type === 'import_image_error' && data.node_id === currentNode.id) {
+              addConsoleLog(`✗ ${data.filename}: ${data.error}`)
+            }
+            
+            if (data.type === 'import_complete' && data.node_id === currentNode.id) {
+              // Don't update state here - let the API response handle it
+              // This prevents race conditions between WebSocket and API response
+              addConsoleLog(`WebSocket: ${data.message}`)
+            }
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error)
+          }
+        }
+        
+        ws.onerror = (error) => {
+          console.warn('WebSocket connection error - server may not be running')
+          // Don't spam the console with errors when server is down
+        }
+        
+        ws.onclose = (event) => {
+          console.log('WebSocket disconnected')
+          
+          // Attempt to reconnect if it wasn't a clean close and we haven't exceeded max attempts
+          if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++
+            console.log(`Attempting to reconnect WebSocket (${reconnectAttempts}/${maxReconnectAttempts})...`)
+            setTimeout(connectWebSocket, reconnectDelay)
+          } else if (reconnectAttempts >= maxReconnectAttempts) {
+            console.log('Max WebSocket reconnection attempts reached. Server may be offline.')
+          }
+        }
+      } catch (error) {
+        console.error('Failed to create WebSocket connection:', error)
+      }
+    }
+
+    connectWebSocket()
+    
+    return () => {
+      if (ws) {
+        ws.close(1000, 'Component unmounting') // Clean close
+      }
+    }
+  }, [currentNode?.id]) // Removed addConsoleLog from dependencies
 
   // Auto-load existing images when input directory changes
   useEffect(() => {
@@ -114,6 +204,13 @@ const AdvancedFaceEditorView: React.FC = () => {
             hasFaceData: false  // Initially assume no face data until import
           }))
           setFaceImages(sortedFaceImages)
+          
+          // Clear any previous face data since we're loading a new directory
+          setAllFaceData({})
+          setFaceDataImported(false)
+          
+          addConsoleLog(`Thumbnails loaded. Click "Import Face Data" to process landmarks and segmentation.`)
+          
           setLoading(false)
         } else {
           addConsoleLog(`Error loading images: ${response.message || 'Unknown error'}`)
@@ -383,58 +480,42 @@ const AdvancedFaceEditorView: React.FC = () => {
     setLoading(true)
     setIsImporting(true)
     setImportProgress(0)
-    setImportMessage('Starting import...')
-    addConsoleLog('Importing face data...')
-    addConsoleLog('This may take several minutes for large datasets...')
-    
-    // Start progress polling
-    const progressInterval = setInterval(async () => {
-      try {
-        const progressResponse = await apiClient.getNodeProgress(currentNode.id)
-        if (progressResponse.success && progressResponse.progress !== undefined) {
-          setImportProgress(progressResponse.progress)
-          setImportMessage(progressResponse.message || 'Processing images...')
-        }
-      } catch (error) {
-        // Ignore progress polling errors
-      }
-    }, 1000) // Poll every second
+    setImportMessage('Starting batch import...')
+    addConsoleLog('Starting batch import of face data...')
+    addConsoleLog('Processing images in batches for better performance...')
     
     try {
-      const response = await apiClient.importFaceData(currentNode.id, currentNode.parameters?.input_dir || '')
-      clearInterval(progressInterval) // Stop polling
+      // Use the optimized batch import process
+      const importResponse = await apiClient.importAllFaceData(currentNode.id, currentNode.parameters?.input_dir || '')
       
-      if (response.success) {
+      if (importResponse.success) {
         setImportProgress(100)
         setImportMessage('Import completed!')
-        addConsoleLog(`Imported ${response.faces_imported} faces (${response.faces_with_data} had embedded data)`)
-        addConsoleLog(`Landmarks found: ${response.faces_with_landmarks || 0}`)
-        addConsoleLog(`Segmentation polygons found: ${response.faces_with_segmentation || 0}`)
-        addConsoleLog(`Total images processed: ${response.total_images}`)
+        console.log('Import response face_data:', importResponse.face_data)
+        console.log('Number of faces with data:', Object.keys(importResponse.face_data).length)
+        console.log('First 5 face_data keys:', Object.keys(importResponse.face_data).slice(0, 5))
+        console.log('Sample face_data entry:', Object.keys(importResponse.face_data).slice(0, 1).map(key => ({ key, data: importResponse.face_data[key] })))
+        setAllFaceData(importResponse.face_data)
+        setFaceDataImported(true)
         
-        // Mark all face images as having face data (they now have imported metadata)
+        // Mark all face images as having face data
         setFaceImages(prev => prev.map(face => ({
           ...face,
           hasFaceData: true
         })))
         
+        addConsoleLog(`✓ Successfully imported face data for ${importResponse.processed_count}/${importResponse.total_count} images`)
         addConsoleLog('Face thumbnails now show blue outline indicating imported face data')
       } else {
         setImportMessage('Import failed')
-        addConsoleLog(`Error: ${response.message}`)
+        addConsoleLog(`✗ Import failed: ${importResponse.message}`)
       }
     } catch (error) {
-      clearInterval(progressInterval) // Stop polling
       setImportMessage('Import failed')
-      addConsoleLog(`Error: ${error}`)
+      addConsoleLog(`✗ Import error: ${error}`)
     } finally {
       setLoading(false)
-      // Keep progress bar visible for a moment to show completion
-      setTimeout(() => {
-        setIsImporting(false)
-        setImportProgress(0)
-        setImportMessage('')
-      }, 2000)
+      setIsImporting(false)
     }
   }, [currentNode, addConsoleLog])
 
@@ -528,10 +609,31 @@ const AdvancedFaceEditorView: React.FC = () => {
               Advanced Face Editor
             </h2>
             
+            {/* Import Status Indicator */}
+            {isImporting && (
+              <div className="flex items-center space-x-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-md">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                <div className="flex flex-col">
+                  <span className="text-sm text-blue-700 dark:text-blue-300">
+                    {importMessage || 'Importing face data...'}
+                  </span>
+                  {currentImage && (
+                    <span className="text-xs text-blue-600 dark:text-blue-400">
+                      Processing: {currentImage}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+            
             {/* Overlay Toggle Buttons */}
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => setShowSegmentation(!showSegmentation)}
+                onClick={() => {
+                  console.log('Segmentation button clicked, current state:', showSegmentation)
+                  setShowSegmentation(!showSegmentation)
+                  console.log('Segmentation state changed to:', !showSegmentation)
+                }}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
                   showSegmentation
                     ? 'bg-green-500 text-white'
@@ -541,7 +643,11 @@ const AdvancedFaceEditorView: React.FC = () => {
                 {showSegmentation ? 'Hide' : 'Show'} Segmentation
               </button>
               <button
-                onClick={() => setShowAlignments(!showAlignments)}
+                onClick={() => {
+                  console.log('Alignments button clicked, current state:', showAlignments)
+                  setShowAlignments(!showAlignments)
+                  console.log('Alignments state changed to:', !showAlignments)
+                }}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
                   showAlignments
                     ? 'bg-purple-500 text-white'
@@ -575,6 +681,33 @@ const AdvancedFaceEditorView: React.FC = () => {
         </div>
       </div>
 
+      {/* Progress Bar */}
+      {isImporting && (
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 transition-colors duration-300">
+          <div className="w-full">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {importMessage || 'Importing face data...'}
+              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {processedCount}/{totalCount} ({Math.round(importProgress)}%)
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${importProgress}%` }}
+              ></div>
+            </div>
+            {currentImage && (
+              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">
+                Processing: {currentImage}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Face Grid */}
@@ -583,6 +716,8 @@ const AdvancedFaceEditorView: React.FC = () => {
             faceImages={faceImages}
             showSegmentation={showSegmentation}
             showAlignments={showAlignments}
+            allFaceData={allFaceData}
+            faceDataImported={faceDataImported}
             onFaceSelect={handleFaceSelect}
             onFaceMultiSelect={handleFaceMultiSelect}
             loading={loading}
@@ -643,6 +778,8 @@ const AdvancedFaceEditorView: React.FC = () => {
             importProgress={importProgress}
             importMessage={importMessage}
             isImporting={isImporting}
+            processedCount={processedCount}
+            totalCount={totalCount}
           />
         )}
       </div>

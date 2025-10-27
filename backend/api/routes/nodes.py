@@ -1049,6 +1049,40 @@ async def get_face_data_batch(node_id: str, request: Dict[str, Any]):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/{node_id}/import-all-face-data")
+async def import_all_face_data(node_id: str, request: Dict[str, Any]):
+    """Import face data for all images in the input directory upfront"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        input_dir = request.get('input_dir')
+        
+        if not input_dir:
+            raise HTTPException(status_code=400, detail="Missing required parameter: input_dir")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={"input_dir": input_dir},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message=""
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Import all face data upfront
+        result = await face_editor.import_all_face_data(input_dir)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/{node_id}/progress")
 async def get_node_progress(node_id: str):
     """Get current progress of a node operation"""

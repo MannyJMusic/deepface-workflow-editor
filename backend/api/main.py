@@ -5,6 +5,7 @@ import socketio
 import uvicorn
 import os
 import sys
+import asyncio
 from pathlib import Path
 
 # Add the backend directory to Python path
@@ -44,9 +45,18 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket_manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()
-            # Handle incoming WebSocket messages if needed
+            try:
+                # Wait for messages with a timeout to prevent hanging
+                data = await asyncio.wait_for(websocket.receive_text(), timeout=1.0)
+                # Handle incoming WebSocket messages if needed
+                print(f"Received WebSocket message: {data}")
+            except asyncio.TimeoutError:
+                # Continue the loop to keep the connection alive
+                continue
     except WebSocketDisconnect:
+        websocket_manager.disconnect(websocket)
+    except Exception as e:
+        print(f"WebSocket error: {e}")
         websocket_manager.disconnect(websocket)
 
 @app.get("/")

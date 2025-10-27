@@ -582,7 +582,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
         
         if (nodeType === 'xseg_editor') {
           defaultParameters = {
-            input_dir: '/tmp/faces', // Default input directory
+            input_dir: '/Volumes/MacOSNew/DFL/DeepFaceLab_MacOS/workspace/data_src/aligned', // Default to user's DFL directory
             face_type: 'full_face',
             detection_model: 'VGGFace2',
             similarity_threshold: 0.6

@@ -1906,6 +1906,279 @@ if __name__ == "__main__":
                 "segmentation": None
             }
     
+    async def import_all_face_data(self, input_dir: str) -> Dict[str, Any]:
+        """Import face data for all images in the input directory upfront (like machine editor)"""
+        try:
+            await self.log_message("info", f"Starting machine editor style import of all face data from: {input_dir}")
+            
+            # Get all face images in the directory
+            face_files = self._get_face_files(input_dir)
+            total_images = len(face_files)
+            
+            if total_images == 0:
+                return {
+                    "success": True,
+                    "message": "No face images found to import",
+                    "face_data": {}
+                }
+            
+            await self.log_message("info", f"Found {total_images} face images, processing sequentially like machine editor...")
+            
+            # Use machine editor style sequential processing
+            all_face_data = {}
+            processed_count = 0
+            
+            # Process each image sequentially with progress updates (like machine editor)
+            for i, face_file in enumerate(face_files):
+                from pathlib import Path
+                face_id = Path(face_file).stem
+                
+                try:
+                    # Use direct DFL script access (like machine editor)
+                    face_data = await self._get_face_data_direct(face_file)
+                    
+                    if face_data.get("success", False):
+                        all_face_data[face_id] = {
+                            "landmarks": face_data.get("landmarks"),
+                            "segmentation": face_data.get("segmentation"),
+                            "face_type": face_data.get("face_type"),
+                            "source_filename": face_data.get("source_filename")
+                        }
+                        processed_count += 1
+                        # Debug: log first few successful imports
+                        if processed_count <= 3:
+                            await self.log_message("info", f"Sample face data for {face_id}: landmarks={bool(face_data.get('landmarks'))}, segmentation={bool(face_data.get('segmentation'))}")
+                    else:
+                        # Debug: log why face data failed
+                        await self.log_message("warning", f"No face data for {face_id}: {face_data.get('message', 'Unknown error')}")
+                except Exception as e:
+                    await self.log_message("warning", f"Error processing {face_id}: {str(e)}")
+                    continue
+                
+                # Send progress update every 50 images (like machine editor progress)
+                if (i + 1) % 50 == 0 or (i + 1) == total_images:
+                    progress = (i + 1) / total_images * 100
+                    await websocket_manager.broadcast(json.dumps({
+                        "type": "import_progress",
+                        "node_id": self.node.id,
+                        "progress": progress,
+                        "current_image": f"Processing {i + 1}/{total_images}",
+                        "processed": processed_count,
+                        "total": total_images,
+                        "message": f"Processed {i + 1}/{total_images} images ({processed_count} with data)"
+                    }))
+            
+            await self.log_message("info", f"Completed machine editor style import: {processed_count}/{total_images} images processed")
+            
+            # Send completion update
+            await websocket_manager.broadcast(json.dumps({
+                "type": "import_complete",
+                "node_id": self.node.id,
+                "success": True,
+                "processed_count": processed_count,
+                "total_count": total_images,
+                "message": f"Import completed: {processed_count}/{total_images} images processed"
+            }))
+            
+            return {
+                "success": True,
+                "message": f"Successfully imported face data for {processed_count}/{total_images} images",
+                "face_data": all_face_data,
+                "processed_count": processed_count,
+                "total_count": total_images
+            }
+            
+        except Exception as e:
+            await self.log_message("error", f"Machine editor style import failed: {str(e)}")
+            return {
+                "success": False,
+                "message": f"Import failed: {str(e)}",
+                "face_data": {}
+            }
+    
+    async def _get_face_data_direct(self, face_file: str) -> Dict[str, Any]:
+        """Direct access to DFL scripts for faster face data extraction"""
+        try:
+            from pathlib import Path
+            import sys
+            
+            # Add dfl_scripts to path
+            dfl_scripts_path = Path(__file__).parent.parent / "dfl_scripts"
+            if str(dfl_scripts_path) not in sys.path:
+                sys.path.insert(0, str(dfl_scripts_path))
+            
+            try:
+                # Import DFL modules directly
+                from DFLJPG import DFLJPG
+                from DFLPNG import DFLPNG
+                from pathlib import Path
+                
+                # Load face data directly from file using DFL modules
+                ext = Path(face_file).suffix.lower()
+                if ext in ['.jpg', '.jpeg']:
+                    dfl_data = DFLJPG.load(face_file)
+                elif ext == '.png':
+                    dfl_data = DFLPNG.load(face_file)
+                else:
+                    return {
+                        "success": False,
+                        "message": f"Unsupported file format: {ext}"
+                    }
+                
+                if dfl_data is None:
+                    return {
+                        "success": False,
+                        "message": "No DFL data found in image"
+                    }
+                
+                # Extract data
+                result = {
+                    "success": True,
+                    "landmarks": None,
+                    "segmentation": None,
+                    "face_type": None,
+                    "source_filename": None
+                }
+                
+                # Get landmarks
+                landmarks = dfl_data.get_landmarks()
+                if landmarks is not None:
+                    import numpy as np
+                    if isinstance(landmarks, np.ndarray):
+                        result["landmarks"] = landmarks.tolist()
+                    else:
+                        result["landmarks"] = landmarks
+                
+                # Get segmentation polygons
+                seg_ie_polys = dfl_data.get_seg_ie_polys()
+                if seg_ie_polys is not None and seg_ie_polys.has_polys():
+                    polys = []
+                    for poly in seg_ie_polys.get_polys():
+                        pts = poly.get_pts()
+                        if isinstance(pts, np.ndarray):
+                            polys.append(pts.tolist())
+                        else:
+                            polys.append(pts)
+                    result["segmentation"] = polys
+                
+                # Get face type
+                face_type = dfl_data.get_face_type()
+                if face_type is not None:
+                    result["face_type"] = str(face_type)
+                
+                # Get source filename
+                source_filename = dfl_data.get_source_filename()
+                if source_filename is not None:
+                    result["source_filename"] = source_filename
+                
+                print(f"DEBUG: Loaded face data for {face_file}: landmarks={bool(result['landmarks'])}, segmentation={bool(result['segmentation'])}")
+                return result
+                    
+            except ImportError:
+                # Fallback to existing method
+                face_id = Path(face_file).stem
+                return await self.get_face_data_for_image(face_id, str(Path(face_file).parent))
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Error: {str(e)}"
+            }
+    
+    def _process_face_data_sync(self, face_id: str, file_path: str, input_dir: str) -> Dict[str, Any]:
+        """Synchronous version of face data processing for ThreadPoolExecutor"""
+        try:
+            # Use DFL scripts directly for faster processing
+            from pathlib import Path
+            import sys
+            
+            # Add dfl_scripts to path
+            dfl_scripts_path = Path(__file__).parent.parent / "dfl_scripts"
+            sys.path.insert(0, str(dfl_scripts_path))
+            
+            try:
+                from dfl_scripts.dfl_io import load_face_data
+                
+                # Load face data directly from file
+                face_data = load_face_data(file_path)
+                
+                if face_data:
+                    return {
+                        "success": True,
+                        "face_id": face_id,
+                        "landmarks": face_data.get("landmarks"),
+                        "segmentation": face_data.get("segmentation_polygons"),
+                        "face_type": face_data.get("face_type"),
+                        "source_filename": face_data.get("source_filename")
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "face_id": face_id,
+                        "message": "No face data found"
+                    }
+                    
+            except ImportError:
+                # Fallback to basic file analysis
+                return {
+                    "success": False,
+                    "face_id": face_id,
+                    "message": "DFL scripts not available"
+                }
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "face_id": face_id,
+                "message": f"Error: {str(e)}"
+            }
+    
+    async def _process_single_face_data(self, face_id: str, filename: str, input_dir: str, index: int, total: int) -> Dict[str, Any]:
+        """Process a single face image and return the result"""
+        try:
+            # Extract face data for this image
+            face_data = await self.get_face_data_for_image(face_id, input_dir)
+            
+            if face_data.get("success", False):
+                # Send success update
+                await websocket_manager.broadcast(json.dumps({
+                    "type": "import_image_success",
+                    "node_id": self.node.id,
+                    "filename": filename,
+                    "has_landmarks": bool(face_data.get("landmarks")),
+                    "has_segmentation": bool(face_data.get("segmentation"))
+                }))
+                
+                return {
+                    "success": True,
+                    "face_id": face_id,
+                    "landmarks": face_data.get("landmarks"),
+                    "segmentation": face_data.get("segmentation"),
+                    "face_type": face_data.get("face_type"),
+                    "source_filename": face_data.get("source_filename")
+                }
+            else:
+                # Send failure update
+                await websocket_manager.broadcast(json.dumps({
+                    "type": "import_image_failed",
+                    "node_id": self.node.id,
+                    "filename": filename,
+                    "reason": "No face data found"
+                }))
+                
+                return {"success": False, "face_id": face_id}
+                
+        except Exception as e:
+            # Send error update
+            await websocket_manager.broadcast(json.dumps({
+                "type": "import_image_error",
+                "node_id": self.node.id,
+                "filename": filename,
+                "error": str(e)
+            }))
+            
+            return {"success": False, "face_id": face_id, "error": str(e)}
+    
     def get_progress(self) -> float:
         """Get current progress percentage"""
         return self.progress

@@ -554,6 +554,13 @@ class ApiClient {
     return response.data
   }
 
+  async importAllFaceData(nodeId: string, inputDir: string): Promise<{ success: boolean; message: string; face_data: Record<string, { landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }>; processed_count: number; total_count: number }> {
+    const response = await this.http.post(`/nodes/${nodeId}/import-all-face-data`, {
+      input_dir: inputDir
+    })
+    return response.data
+  }
+
   async getNodeProgress(nodeId: string): Promise<{ success: boolean; progress?: number; message?: string }> {
     const response = await this.http.get(`/nodes/${nodeId}/progress`)
     return response.data

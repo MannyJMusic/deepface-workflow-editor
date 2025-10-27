@@ -280,7 +280,7 @@ async function startBackend() {
     let pythonCmd = CONFIG.pythonExecutable;
     
     if (condaInfo) {
-        if (condaInfo.isActive) {
+        if (condaInfo.isActive && condaInfo.condaEnv === CONFIG.condaEnv) {
             log(`Using active conda environment: ${condaInfo.condaEnv}`);
             pythonProcess = spawn(pythonCmd, ['api/main.py'], {
                 cwd: CONFIG.backendDir,
@@ -289,8 +289,8 @@ async function startBackend() {
                 env: { ...process.env }
             });
         } else {
-            log(`Activating conda environment: ${condaInfo.condaEnv}`);
-            const condaCmd = `source ${condaInfo.condaPath} && conda activate ${condaInfo.condaEnv} && cd ${CONFIG.backendDir} && ${pythonCmd} api/main.py`;
+            log(`Activating conda environment: ${CONFIG.condaEnv}`);
+            const condaCmd = `source ${condaInfo.condaPath} && conda activate ${CONFIG.condaEnv} && cd ${CONFIG.backendDir} && ${pythonCmd} api/main.py`;
             pythonProcess = spawn('bash', ['-c', condaCmd], {
                 cwd: CONFIG.backendDir,
                 stdio: ['ignore', 'pipe', 'pipe'],
@@ -370,6 +370,38 @@ async function startFrontend() {
     return false;
 }
 
+// Start Electron app
+async function startElectron() {
+    log('Starting Electron app...');
+    
+    // Wait for frontend to be ready
+    log('Waiting for frontend to be ready...');
+    for (let i = 0; i < 30; i++) {
+        if (await checkPort(CONFIG.frontendPort)) {
+            break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    const logStream = fs.createWriteStream(path.join(__dirname, '.electron.log'), { flags: 'a' });
+    logStream.write(`\n=== Starting Electron at ${new Date().toISOString()} ===\n`);
+    
+    const electronProcess = spawn('npm', ['run', 'dev:electron'], {
+        cwd: CONFIG.projectDir,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        detached: false
+    });
+
+    electronProcess.stdout.pipe(logStream);
+    electronProcess.stderr.pipe(logStream);
+
+    // Save PID
+    fs.writeFileSync(path.join(__dirname, '.electron.pid'), electronProcess.pid.toString());
+
+    success('Electron app started successfully!');
+    return true;
+}
+
 // Start all services
 async function start() {
     log('Starting DeepFaceLab Workflow Editor...');
@@ -388,16 +420,21 @@ async function start() {
             process.exit(1);
         }
 
+        // Start Electron app
+        await startElectron();
+
         console.log('='.repeat(50));
         success('All services started successfully!');
         console.log('');
         console.log('Services running:');
         console.log(`  • Backend API: http://localhost:${CONFIG.backendPort}`);
         console.log(`  • Frontend: http://localhost:${CONFIG.frontendPort}`);
+        console.log(`  • Electron App: Desktop application`);
         console.log('');
         console.log('Logs:');
         console.log(`  • Backend: ${CONFIG.logFiles.backend}`);
         console.log(`  • Frontend: ${CONFIG.logFiles.frontend}`);
+        console.log(`  • Electron: .electron.log`);
         console.log('');
         console.log('To stop services: npm run stop');
         console.log('Press Ctrl+C to stop all services');
@@ -413,6 +450,9 @@ async function stop() {
     log('Stopping DeepFaceLab Workflow Editor...');
     console.log('='.repeat(50));
 
+    // Stop Electron app
+    await killByPidFile(path.join(__dirname, '.electron.pid'), 'Electron');
+
     // Stop frontend
     await killByPidFile(CONFIG.pidFiles.frontend, 'Frontend');
 
@@ -423,6 +463,7 @@ async function stop() {
     log('Cleaning up any remaining processes...');
     exec('pkill -f "python.*main.py" || true', () => {});
     exec('pkill -f "vite" || true', () => {});
+    exec('pkill -f "electron" || true', () => {});
 
     console.log('='.repeat(50));
     success('All services stopped!');
@@ -443,6 +484,18 @@ async function status() {
 
     const backendRunning = await checkPort(CONFIG.backendPort);
     const frontendRunning = await checkPort(CONFIG.frontendPort);
+    
+    // Check if Electron is running
+    const electronPidFile = path.join(__dirname, '.electron.pid');
+    let electronRunning = false;
+    if (fs.existsSync(electronPidFile)) {
+        const pid = fs.readFileSync(electronPidFile, 'utf8').trim();
+        electronRunning = await new Promise((resolve) => {
+            exec(`kill -0 ${pid} 2>/dev/null`, (err) => {
+                resolve(!err);
+            });
+        });
+    }
 
     if (backendRunning) {
         success(`Backend: Running on port ${CONFIG.backendPort}`);
@@ -454,6 +507,12 @@ async function status() {
         success(`Frontend: Running on port ${CONFIG.frontendPort}`);
     } else {
         error('Frontend: Not running');
+    }
+
+    if (electronRunning) {
+        success('Electron: Running');
+    } else {
+        error('Electron: Not running');
     }
 
     console.log('='.repeat(50));

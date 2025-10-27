@@ -18,6 +18,8 @@ interface FaceGridProps {
   faceImages: FaceImage[]
   showSegmentation: boolean
   showAlignments: boolean
+  allFaceData: Record<string, { landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }>
+  faceDataImported: boolean
   onFaceSelect: (faceId: string) => void
   onFaceMultiSelect: (faceId: string, selected: boolean) => void
   loading: boolean
@@ -29,20 +31,18 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
   faceImages,
   showSegmentation,
   showAlignments,
+  allFaceData,
+  faceDataImported,
   onFaceSelect,
   onFaceMultiSelect,
   loading,
   nodeId,
   inputDir
 }) => {
-  // State for face data
-  const [faceDataCache, setFaceDataCache] = useState<Map<string, { landmarks?: number[][]; segmentation?: number[][][] }>>(new Map())
-  const [loadingFaceData, setLoadingFaceData] = useState<Set<string>>(new Set())
+  // Grid and container state
   const gridRef = useRef<FixedSizeGrid>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
-  const loadingStartedRef = useRef(false)
-  const requestedFaceIdsRef = useRef<Set<string>>(new Set())
 
   // Generate image URL using API endpoint
   const getImageUrl = useCallback((filename: string) => {
@@ -59,121 +59,36 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
     onFaceMultiSelect(faceId, checked)
   }, [onFaceMultiSelect])
 
-  // Fetch face data for a specific image
-  const fetchFaceData = useCallback(async (faceId: string) => {
-    // Check if already requested or cached
-    if (requestedFaceIdsRef.current.has(faceId) || faceDataCache.has(faceId)) {
-      return // Already requested or cached
-    }
-
-    requestedFaceIdsRef.current.add(faceId)
-    setLoadingFaceData(prev => new Set(prev).add(faceId))
-
-    try {
-      const response = await apiClient.getFaceData(nodeId, faceId, inputDir)
-      if (response.success) {
-        setFaceDataCache(prev => {
-          const newCache = new Map(prev)
-          newCache.set(faceId, {
-            landmarks: response.landmarks,
-            segmentation: response.segmentation
-          })
-          return newCache
-        })
-      }
-    } catch (error) {
-      console.error(`Failed to fetch face data for ${faceId}:`, error)
-    } finally {
-      setLoadingFaceData(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(faceId)
-        return newSet
-      })
-    }
-  }, [nodeId, inputDir, faceDataCache])
-
-  // Fetch face data in batches for better performance
-  const fetchFaceDataBatch = useCallback(async (faceIds: string[]) => {
-    // Filter out already cached or requested faces
-    const facesToLoad = faceIds.filter(faceId => 
-      !requestedFaceIdsRef.current.has(faceId) && !faceDataCache.has(faceId)
-    )
-    
-    if (facesToLoad.length === 0) {
-      return
-    }
-
-    // Mark all faces as requested
-    facesToLoad.forEach(faceId => requestedFaceIdsRef.current.add(faceId))
-    setLoadingFaceData(prev => {
-      const newSet = new Set(prev)
-      facesToLoad.forEach(faceId => newSet.add(faceId))
-      return newSet
+  // Get face data from pre-imported data
+  const getFaceData = useCallback((faceId: string) => {
+    // Remove file extension to match backend keys (e.g., "00001_0.jpg" -> "00001_0")
+    const keyWithoutExtension = faceId.replace(/\.(jpg|jpeg|png)$/i, '')
+    const data = allFaceData[keyWithoutExtension] || null
+    console.log(`getFaceData called for ${faceId}:`, {
+      hasData: !!data,
+      originalFaceId: faceId,
+      keyWithoutExtension,
+      dataKeys: Object.keys(allFaceData).slice(0, 10), // Show first 10 keys
+      totalDataKeys: Object.keys(allFaceData).length,
+      showSegmentation,
+      showAlignments,
+      allFaceDataSample: Object.keys(allFaceData).slice(0, 3).map(key => ({ key, hasData: !!allFaceData[key] }))
     })
-
-    try {
-      const response = await apiClient.getFaceDataBatch(nodeId, facesToLoad, inputDir)
-      if (response.success) {
-        setFaceDataCache(prev => {
-          const newCache = new Map(prev)
-          Object.entries(response.results).forEach(([faceId, faceData]) => {
-            if (faceData.success) {
-              newCache.set(faceId, {
-                landmarks: faceData.landmarks,
-                segmentation: faceData.segmentation
-              })
-            }
-          })
-          return newCache
-        })
-      }
-    } catch (error) {
-      console.error(`Failed to fetch batch face data:`, error)
-    } finally {
-      setLoadingFaceData(prev => {
-        const newSet = new Set(prev)
-        facesToLoad.forEach(faceId => newSet.delete(faceId))
-        return newSet
+    if (data && (showSegmentation || showAlignments)) {
+      console.log(`Face ${faceId} data:`, {
+        hasLandmarks: !!data.landmarks,
+        landmarksCount: data.landmarks?.length || 0,
+        landmarksSample: data.landmarks?.slice(0, 3),
+        hasSegmentation: !!data.segmentation,
+        segmentationCount: data.segmentation?.length || 0,
+        segmentationSample: data.segmentation?.[0]?.slice(0, 3),
+        showSegmentation,
+        showAlignments,
+        fullData: data
       })
     }
-  }, [nodeId, inputDir])
-
-  // Fetch face data when view mode changes to segmentation or alignments
-  useEffect(() => {
-    if (showSegmentation || showAlignments) {
-      // Prevent multiple simultaneous loading operations
-      if (loadingStartedRef.current) {
-        return
-      }
-      
-      loadingStartedRef.current = true
-      
-      // Load data for all images using batch API
-      const loadAllFaceData = async () => {
-        const batchSize = 50 // Process 50 images at a time (much larger batches with new API)
-        const totalImages = faceImages.length
-        
-        for (let i = 0; i < totalImages; i += batchSize) {
-          const batch = faceImages.slice(i, i + batchSize)
-          const faceIds = batch.map(face => face.id)
-          
-          // Use batch API for much better performance
-          await fetchFaceDataBatch(faceIds)
-          
-          // Small delay between batches to prevent server overload
-          if (i + batchSize < totalImages) {
-            await new Promise(resolve => setTimeout(resolve, 200))
-          }
-        }
-      }
-      
-      loadAllFaceData()
-    } else {
-      // Reset loading flag when overlays are disabled
-      loadingStartedRef.current = false
-      requestedFaceIdsRef.current.clear()
-    }
-  }, [showSegmentation, showAlignments, faceImages.length, fetchFaceDataBatch])
+    return data
+  }, [allFaceData, showSegmentation, showAlignments])
 
   // Update container size on mount and resize
   useEffect(() => {
@@ -199,8 +114,8 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
   // Render individual face thumbnail
   const renderFaceThumbnail = useCallback((face: FaceImage, index: number) => {
     const size = 120
-    const cachedData = faceDataCache.get(face.id)
-    const isLoadingData = loadingFaceData.has(face.id)
+    const cachedData = getFaceData(face.filename)
+    const isLoadingData = false // No more loading since data is pre-imported
 
     return (
       <div
@@ -251,7 +166,15 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
           </div>
 
           {/* Segmentation Polygon Overlay */}
-          {showSegmentation && cachedData?.segmentation && (
+          {showSegmentation && cachedData?.segmentation && (() => {
+            console.log(`Rendering segmentation for ${face.id}:`, {
+              showSegmentation,
+              hasSegmentation: !!cachedData?.segmentation,
+              segmentationCount: cachedData?.segmentation?.length,
+              segmentationSample: cachedData?.segmentation?.[0]?.slice(0, 3)
+            })
+            return true
+          })() && (
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none"
               viewBox="0 0 100 100"
@@ -278,7 +201,15 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
           )}
 
           {/* Landmarks Overlay */}
-          {showAlignments && cachedData?.landmarks && (
+          {showAlignments && cachedData?.landmarks && (() => {
+            console.log(`Rendering landmarks for ${face.id}:`, {
+              showAlignments,
+              hasLandmarks: !!cachedData?.landmarks,
+              landmarksCount: cachedData?.landmarks?.length,
+              landmarksSample: cachedData?.landmarks?.slice(0, 3)
+            })
+            return true
+          })() && (
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none"
               viewBox="0 0 100 100"
@@ -359,12 +290,6 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
             </svg>
           )}
 
-          {/* Loading indicator for face data */}
-          {isLoadingData && (showSegmentation || showAlignments) && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            </div>
-          )}
 
           {/* Face Data Indicator */}
           {face.hasFaceData && (
@@ -400,7 +325,7 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
         </div>
       </div>
     )
-  }, [getImageUrl, handleFaceClick, handleFaceCheckboxChange, showSegmentation, showAlignments, faceDataCache, loadingFaceData])
+  }, [getImageUrl, handleFaceClick, handleFaceCheckboxChange, showSegmentation, showAlignments, getFaceData])
 
   // Cell renderer for virtual grid
   const Cell = useCallback(({ columnIndex, rowIndex, style }: any) => {
@@ -468,14 +393,14 @@ const OptimizedFaceGrid: React.FC<FaceGridProps> = ({
                   None
                 </span>
               )}
-              {(showSegmentation || showAlignments) && loadingFaceData.size > 0 && (
-                <span className="text-xs text-blue-600 dark:text-blue-400">
-                  Loading data for {loadingFaceData.size} images... ({faceDataCache.size}/{faceImages.length} loaded)
+              {(showSegmentation || showAlignments) && !faceDataImported && (
+                <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                  ⚠ Face data not imported yet
                 </span>
               )}
-              {(showSegmentation || showAlignments) && loadingFaceData.size === 0 && faceDataCache.size > 0 && (
+              {(showSegmentation || showAlignments) && faceDataImported && (
                 <span className="text-xs text-green-600 dark:text-green-400">
-                  ✓ All {faceDataCache.size} images loaded
+                  ✓ Face data imported ({Object.keys(allFaceData).length} images)
                 </span>
               )}
             </div>

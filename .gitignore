@@ -1,9 +1,14 @@
 node_modules
+
+# Log files
+*.log
+*.pid
+
+# Specific log files
 .backend.log
 .backend.pid
 .frontend.log
 .frontend.pid
-.backend.log
-.backend.log
-.frontend.log
-.backend.log
+.electron.log
+.electron.pid
+startup.log
