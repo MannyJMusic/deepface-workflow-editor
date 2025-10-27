@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .node-container {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm p-4 min-w-[200px];
+  }
+  
+  .node-header {
+    @apply font-semibold text-gray-800 mb-2;
+  }
+  
+  .node-port {
+    @apply w-3 h-3 rounded-full border-2 border-gray-400 bg-white;
+  }
+  
+  .node-port.input {
+    @apply border-blue-500;
+  }
+  
+  .node-port.output {
+    @apply border-green-500;
+  }
+  
+  .workflow-canvas {
+    @apply w-full h-full bg-gray-50;
+  }
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "test": "API Connectivity",
+    "success": true,
+    "message": "Connected successfully, found 9 node definitions",
+    "details": null,
+    "timestamp": 1761528331.9985542
+  },
+  {
+    "test": "Node Definitions",
+    "success": true,
+    "message": "All 9 expected nodes found",
+    "details": null,
+    "timestamp": 1761528332.0020192
+  },
+  {
+    "test": "Node Categories",
+    "success": true,
+    "message": "All 4 expected categories found",
+    "details": null,
+    "timestamp": 1761528332.0083652
+  },
+  {
+    "test": "Advanced Face Editor",
+    "success": true,
+    "message": "Execution started: single_node_face-editor-test",
+    "details": null,
+    "timestamp": 1761528332.093247
+  },
+  {
+    "test": "Advanced Face Editor Completion",
+    "success": false,
+    "message": "Execution status: Not found",
+    "details": null,
+    "timestamp": 1761528335.102602
+  },
+  {
+    "test": "Image Resize Node",
+    "success": true,
+    "message": "Execution started successfully",
+    "details": null,
+    "timestamp": 1761528335.111725
+  },
+  {
+    "test": "Image Resize Completion",
+    "success": false,
+    "message": "Status: error",
+    "details": null,
+    "timestamp": 1761528338.121506
+  },
+  {
+    "test": "WebSocket Connection",
+    "success": false,
+    "message": "Error: WebSocketApp.run_forever() got an unexpected keyword argument 'timeout'",
+    "details": null,
+    "timestamp": 1761528338.131222
+  }
+]

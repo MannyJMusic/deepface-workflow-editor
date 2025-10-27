@@ -1,0 +1,29 @@
+
+> deepface-workflow-editor@1.0.0 start
+> node start.js start
+
+[34m[INFO][0m Starting DeepFaceLab Workflow Editor...
+==================================================
+[34m[INFO][0m Starting Backend (FastAPI)...
+[34m[INFO][0m Detecting conda environment...
+[33m[WARNING][0m Conda not found. Will use system Python.
+[33m[WARNING][0m Conda not found or environment not available. Using system Python.
+[33m[WARNING][0m For full functionality, please set up conda environment as described in SETUP_CONDA.md
+[34m[INFO][0m Waiting for backend to start...
+[32m[SUCCESS][0m Backend started successfully on port 8001
+[34m[INFO][0m Starting Frontend (Vite)...
+[34m[INFO][0m Waiting for frontend to start...
+[32m[SUCCESS][0m Frontend started successfully on port 5173
+==================================================
+[32m[SUCCESS][0m All services started successfully!
+
+Services running:
+  • Backend API: http://localhost:8001
+  • Frontend: http://localhost:5173
+
+Logs:
+  • Backend: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/.backend.log
+  • Frontend: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/.frontend.log
+
+To stop services: npm run stop
+Press Ctrl+C to stop all services
