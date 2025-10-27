@@ -85,35 +85,54 @@ const AdvancedFaceEditorView: React.FC = () => {
     setConsoleLogs(prev => [...prev, `[${timestamp}] ${message}`])
   }, [])
 
+  // Store WebSocket connection in a ref so it can be accessed by other functions
+  const wsRef = React.useRef<WebSocket | null>(null)
+
   // WebSocket connection for real-time progress updates
   useEffect(() => {
-    if (!currentNode?.id) return
+    console.log('🔌 useEffect triggered, currentNode?.id:', currentNode?.id)
+    if (!currentNode?.id) {
+      console.log('🔌 No currentNode.id, skipping WebSocket connection')
+      return
+    }
 
-    let ws: WebSocket | null = null
     let reconnectAttempts = 0
     const maxReconnectAttempts = 3
     const reconnectDelay = 2000
 
     const connectWebSocket = () => {
+      console.log('🔌 connectWebSocket function called')
       try {
-        ws = new WebSocket('ws://localhost:8001/ws')
+        console.log('🔌 Attempting to connect WebSocket to ws://localhost:8001/ws')
+        const ws = new WebSocket('ws://localhost:8001/ws')
+        wsRef.current = ws
         
         ws.onopen = () => {
-          console.log('WebSocket connected for import progress')
+          console.log('🔌 WebSocket connected for import progress')
+          console.log('🔌 WebSocket readyState:', ws.readyState)
+          console.log('🔌 WebSocket URL:', ws.url)
           reconnectAttempts = 0 // Reset on successful connection
         }
         
         ws.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data)
+            console.log('🔌 WebSocket message received:', data)
+            console.log('🔌 Current node ID:', currentNode.id)
+            console.log('🔌 Message node ID:', data.node_id)
             
             // Handle import progress messages
             if (data.type === 'import_progress' && data.node_id === currentNode.id) {
+              console.log('✅ Processing import_progress message:', data)
+              console.log('✅ Setting progress to:', data.progress)
+              console.log('✅ Setting current image to:', data.current_image)
               setImportProgress(data.progress)
               setCurrentImage(data.current_image)
               setProcessedCount(data.processed)
               setTotalCount(data.total)
               setImportMessage(data.message)
+            } else if (data.type === 'import_progress') {
+              console.log('❌ Import progress message ignored - node ID mismatch:', data.node_id, 'vs', currentNode.id)
               addConsoleLog(data.message)
             }
             
@@ -140,17 +159,17 @@ const AdvancedFaceEditorView: React.FC = () => {
         }
         
         ws.onerror = (error) => {
-          console.warn('WebSocket connection error - server may not be running')
+          console.warn('🔌 WebSocket connection error - server may not be running:', error)
           // Don't spam the console with errors when server is down
         }
         
         ws.onclose = (event) => {
-          console.log('WebSocket disconnected')
+          console.log('🔌 WebSocket disconnected:', event.code, event.reason)
           
           // Attempt to reconnect if it wasn't a clean close and we haven't exceeded max attempts
           if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
             reconnectAttempts++
-            console.log(`Attempting to reconnect WebSocket (${reconnectAttempts}/${maxReconnectAttempts})...`)
+            console.log(`🔌 Attempting to reconnect WebSocket (${reconnectAttempts}/${maxReconnectAttempts})...`)
             setTimeout(connectWebSocket, reconnectDelay)
           } else if (reconnectAttempts >= maxReconnectAttempts) {
             console.log('Max WebSocket reconnection attempts reached. Server may be offline.')
@@ -164,8 +183,10 @@ const AdvancedFaceEditorView: React.FC = () => {
     connectWebSocket()
     
     return () => {
-      if (ws) {
-        ws.close(1000, 'Component unmounting') // Clean close
+      console.log('🔌 useEffect cleanup - closing WebSocket')
+      if (wsRef.current) {
+        wsRef.current.close(1000, 'Component unmounting') // Clean close
+        wsRef.current = null
       }
     }
   }, [currentNode?.id]) // Removed addConsoleLog from dependencies
@@ -484,6 +505,22 @@ const AdvancedFaceEditorView: React.FC = () => {
     addConsoleLog('Starting batch import of face data...')
     addConsoleLog('Processing images in batches for better performance...')
     
+    // Ensure WebSocket is connected before starting import
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      console.log('🔌 WebSocket not connected, waiting for connection...')
+      setImportMessage('Connecting to server...')
+      // Wait a bit for WebSocket to connect
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+    
+    console.log('🔌 WebSocket readyState before import:', wsRef.current?.readyState)
+    console.log('🔌 WebSocket connected:', wsRef.current?.readyState === WebSocket.OPEN)
+    
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      console.log('🔌 WebSocket still not connected, proceeding anyway...')
+      setImportMessage('Starting import without real-time progress...')
+    }
+    
     try {
       // Use the optimized batch import process
       const importResponse = await apiClient.importAllFaceData(currentNode.id, currentNode.parameters?.input_dir || '')
@@ -496,6 +533,7 @@ const AdvancedFaceEditorView: React.FC = () => {
         console.log('First 5 face_data keys:', Object.keys(importResponse.face_data).slice(0, 5))
         console.log('Sample face_data entry:', Object.keys(importResponse.face_data).slice(0, 1).map(key => ({ key, data: importResponse.face_data[key] })))
         setAllFaceData(importResponse.face_data)
+        console.log('✅ allFaceData has been set with', Object.keys(importResponse.face_data).length, 'entries')
         setFaceDataImported(true)
         
         // Mark all face images as having face data

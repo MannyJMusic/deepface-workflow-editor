@@ -42,7 +42,9 @@ app.include_router(face_editor.router, prefix="/api/face-editor", tags=["face-ed
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    print(f"🔌 WebSocket connection attempt from {websocket.client}")
     await websocket_manager.connect(websocket)
+    print(f"🔌 WebSocket connected successfully. Total connections: {len(websocket_manager.active_connections)}")
     try:
         while True:
             try:

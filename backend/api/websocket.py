@@ -33,7 +33,9 @@ class WebSocketManager:
             self.disconnect(websocket)
 
     async def broadcast(self, message: str):
+        print(f"🔌 Broadcasting message to {len(self.active_connections)} connections: {message[:100]}...")
         if not self.active_connections:
+            print("🔌 No active connections to broadcast to")
             return
         
         disconnected = []

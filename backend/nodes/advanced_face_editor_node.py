@@ -1955,10 +1955,10 @@ if __name__ == "__main__":
                     await self.log_message("warning", f"Error processing {face_id}: {str(e)}")
                     continue
                 
-                # Send progress update every 50 images (like machine editor progress)
-                if (i + 1) % 50 == 0 or (i + 1) == total_images:
+                # Send progress update every 10 images for better responsiveness
+                if (i + 1) % 10 == 0 or (i + 1) == total_images:
                     progress = (i + 1) / total_images * 100
-                    await websocket_manager.broadcast(json.dumps({
+                    progress_message = {
                         "type": "import_progress",
                         "node_id": self.node.id,
                         "progress": progress,
@@ -1966,7 +1966,9 @@ if __name__ == "__main__":
                         "processed": processed_count,
                         "total": total_images,
                         "message": f"Processed {i + 1}/{total_images} images ({processed_count} with data)"
-                    }))
+                    }
+                    print(f"DEBUG: Sending WebSocket progress update: {progress_message}")
+                    await websocket_manager.broadcast(json.dumps(progress_message))
             
             await self.log_message("info", f"Completed machine editor style import: {processed_count}/{total_images} images processed")
             

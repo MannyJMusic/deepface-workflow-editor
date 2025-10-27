@@ -399,8 +399,23 @@ class ApiClient {
         }
         break
 
+      case 'import_progress':
+        const importProgressCallback = this.wsCallbacks.get('import_progress')
+        if (importProgressCallback) {
+          importProgressCallback(data)
+        }
+        break
+
+      case 'import_complete':
+        const importCompleteCallback = this.wsCallbacks.get('import_complete')
+        if (importCompleteCallback) {
+          importCompleteCallback(data)
+        }
+        break
+
       default:
-        console.log('Unknown WebSocket message type:', type)
+        // Silently ignore unknown message types - they may be handled by other components
+        break
     }
   }
 
