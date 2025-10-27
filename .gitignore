@@ -1,1 +1,8 @@
 node_modules
+.backend.log
+.backend.pid
+.frontend.log
+.frontend.pid
+.backend.log
+.backend.log
+.frontend.log

@@ -58,12 +58,17 @@
     "wait-on": "^7.2.0"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "@types/react-window": "^1.8.8",
+    "@vladmandic/face-api": "^1.7.15",
     "@xyflow/react": "^12.0.0",
     "axios": "^1.6.2",
     "clsx": "^2.0.0",
+    "fabric": "^6.7.1",
     "lucide-react": "^0.303.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-window": "^1.8.11",
     "tailwind-merge": "^2.2.0",
     "zustand": "^4.4.7"
   },

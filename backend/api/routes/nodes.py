@@ -824,18 +824,397 @@ async def get_face_image(node_id: str, filename: str, input_dir: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{node_id}/face-data/{face_id}")
-async def get_face_data(node_id: str, face_id: str):
-    """Get segmentation/landmark data for specific face"""
+# Detection Profile Management Endpoints
+
+@router.post("/{node_id}/detection-profiles")
+async def create_detection_profile(node_id: str, request: Dict[str, Any]):
+    """Create a new detection profile"""
     try:
-        # This would typically fetch from a database or file system
-        # For now, return mock data
+        profile_name = request.get("name", "default")
+        profile_settings = request.get("settings", {})
+        
+        # Store profile (in a real implementation, this would save to a database or file)
+        # For now, just return success
         return {
             "success": True,
-            "face_id": face_id,
-            "segmentation_polygon": None,
-            "landmarks": None,
-            "message": "Face data retrieved"
+            "profile_name": profile_name,
+            "message": f"Detection profile '{profile_name}' created"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{node_id}/detection-profiles")
+async def list_detection_profiles(node_id: str):
+    """List all detection profiles"""
+    try:
+        # Return list of profiles (would fetch from database in real implementation)
+        return {
+            "success": True,
+            "profiles": ["default"],
+            "count": 1
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/{node_id}/detection-profiles/{profile_name}")
+async def delete_detection_profile(node_id: str, profile_name: str):
+    """Delete a detection profile"""
+    try:
+        # Delete profile (would remove from database in real implementation)
+        return {
+            "success": True,
+            "profile_name": profile_name,
+            "message": f"Detection profile '{profile_name}' deleted"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/{node_id}/detection-profiles/{profile_name}/reset")
+async def reset_detection_profile(node_id: str, profile_name: str):
+    """Reset a detection profile to defaults"""
+    try:
+        # Reset profile to defaults (would update in database in real implementation)
+        return {
+            "success": True,
+            "profile_name": profile_name,
+            "message": f"Detection profile '{profile_name}' reset to defaults"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Face Data Operations Endpoints
+
+@router.post("/{node_id}/update-parent-frames")
+async def update_parent_frames(node_id: str, request: Dict[str, Any]):
+    """Update faces to reference parent frames"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        from pathlib import Path
+        
+        input_dir = request.get("input_dir")
+        parent_frame_folder = request.get("parent_frame_folder")
+        
+        if not input_dir or not parent_frame_folder:
+            raise HTTPException(status_code=400, detail="Missing required parameters: input_dir and parent_frame_folder")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={"input_dir": input_dir, "parent_frame_folder": parent_frame_folder},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message="",
+            inputs={},
+            outputs={}
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Update parent frames
+        result = await face_editor.update_parent_to_self(input_dir, parent_frame_folder)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{node_id}/import-face-data")
+async def import_face_data(node_id: str, request: Dict[str, Any]):
+    """Import face metadata from existing images"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        input_dir = request.get("input_dir")
+        
+        if not input_dir:
+            raise HTTPException(status_code=400, detail="Missing required parameter: input_dir")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={"input_dir": input_dir},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message="",
+            inputs={},
+            outputs={}
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Import face data
+        result = await face_editor.import_face_data(input_dir)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{node_id}/face-data/{face_id}")
+async def get_face_data(node_id: str, face_id: str, input_dir: str = None):
+    """Get face data (landmarks, segmentation) for a specific face image"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        if not input_dir:
+            raise HTTPException(status_code=400, detail="Missing required parameter: input_dir")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={"input_dir": input_dir},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message=""
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Get face data for the specific image
+        face_data = await face_editor.get_face_data_for_image(face_id, input_dir)
+        
+        return face_data
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{node_id}/face-data-batch")
+async def get_face_data_batch(node_id: str, request: Dict[str, Any]):
+    """Get face data (landmarks, segmentation) for multiple face images in batch"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        face_ids = request.get('face_ids', [])
+        input_dir = request.get('input_dir')
+        
+        if not input_dir:
+            raise HTTPException(status_code=400, detail="Missing required parameter: input_dir")
+        
+        if not face_ids:
+            raise HTTPException(status_code=400, detail="Missing required parameter: face_ids")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={"input_dir": input_dir},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message=""
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Get face data for all images in batch
+        batch_results = {}
+        for face_id in face_ids:
+            try:
+                face_data = await face_editor.get_face_data_for_image(face_id, input_dir)
+                batch_results[face_id] = face_data
+            except Exception as e:
+                batch_results[face_id] = {
+                    "success": False,
+                    "message": f"Error loading face data for {face_id}: {str(e)}",
+                    "landmarks": None,
+                    "segmentation": None,
+                    "face_type": None,
+                    "source_filename": None
+                }
+        
+        return {
+            "success": True,
+            "message": f"Batch loaded face data for {len(face_ids)} images",
+            "results": batch_results
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{node_id}/progress")
+async def get_node_progress(node_id: str):
+    """Get current progress of a node operation"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message=""
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Get current progress
+        progress = face_editor.get_progress()
+        message = face_editor.get_message()
+        
+        return {
+            "success": True,
+            "progress": progress,
+            "message": message
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{node_id}/copy-embedded-data")
+async def copy_embedded_data(node_id: str, request: Dict[str, Any]):
+    """Copy face metadata between folders"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        input_dir = request.get("input_dir")
+        faces_folder = request.get("faces_folder")
+        only_parent_data = request.get("only_parent_data", False)
+        recalculate = request.get("recalculate", False)
+        
+        if not input_dir or not faces_folder:
+            raise HTTPException(status_code=400, detail="Missing required parameters: input_dir and faces_folder")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={
+                "input_dir": input_dir,
+                "faces_folder": faces_folder,
+                "only_parent_data": only_parent_data,
+                "recalculate": recalculate
+            },
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message="",
+            inputs={},
+            outputs={}
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Copy embedded data
+        result = await face_editor.copy_embedded_data(input_dir, faces_folder, only_parent_data, recalculate)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# XSeg Model Operations Endpoints
+
+@router.post("/{node_id}/xseg/train")
+async def train_xseg_model(node_id: str, request: Dict[str, Any]):
+    """Train XSeg segmentation model"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        input_dir = request.get("input_dir")
+        xseg_model_path = request.get("xseg_model_path")
+        
+        if not input_dir or not xseg_model_path:
+            raise HTTPException(status_code=400, detail="Missing required parameters: input_dir and xseg_model_path")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={"input_dir": input_dir, "xseg_model_path": xseg_model_path},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message="",
+            inputs={},
+            outputs={}
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Train XSeg model
+        result = await face_editor.train_xseg(input_dir, xseg_model_path)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{node_id}/xseg/apply")
+async def apply_xseg_model(node_id: str, request: Dict[str, Any]):
+    """Apply XSeg model to generate masks"""
+    try:
+        from nodes.advanced_face_editor_node import AdvancedFaceEditorNode
+        from schemas.schemas import WorkflowNode, NodeStatus
+        
+        input_dir = request.get("input_dir")
+        xseg_model_path = request.get("xseg_model_path")
+        
+        if not input_dir or not xseg_model_path:
+            raise HTTPException(status_code=400, detail="Missing required parameters: input_dir and xseg_model_path")
+        
+        # Create workflow node
+        workflow_node = WorkflowNode(
+            id=node_id,
+            type="xseg_editor",
+            position={"x": 0, "y": 0},
+            parameters={"input_dir": input_dir, "xseg_model_path": xseg_model_path},
+            status=NodeStatus.IDLE,
+            progress=0.0,
+            message="",
+            inputs={},
+            outputs={}
+        )
+        
+        # Create face editor instance
+        face_editor = AdvancedFaceEditorNode(workflow_node)
+        
+        # Apply XSeg model
+        result = await face_editor.apply_xseg(input_dir, xseg_model_path)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{node_id}/xseg/status")
+async def get_xseg_training_status(node_id: str):
+    """Get XSeg training status"""
+    try:
+        # Return training status (would fetch from training process in real implementation)
+        return {
+            "success": True,
+            "status": "idle",  # idle, training, completed, error
+            "progress": 0.0,
+            "epoch": 0,
+            "loss": None,
+            "message": "No training in progress"
         }
         
     except Exception as e:

@@ -36,10 +36,12 @@ const SingleNodeView: React.FC = () => {
     }
   }
 
-  // Initialize with first available node type if none selected
+  // Initialize with Advanced Face Editor if none selected
   useEffect(() => {
     if (!activeNodeInSingleMode && nodeDefinitions.length > 0) {
-      const firstNodeType = nodeDefinitions[0].type
+      // Look for Advanced Face Editor first, fallback to first available node type
+      const advancedFaceEditor = nodeDefinitions.find(def => def.id === 'advanced_face_editor')
+      const firstNodeType = advancedFaceEditor ? advancedFaceEditor.type : nodeDefinitions[0].type
       setSelectedNodeType(firstNodeType)
       createNodeForSingleMode(firstNodeType)
     }

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Volumes/MacOSNew/SourceCode/deepface-editor/machine-video-editor-0.8.2/**)",
+      "Bash(npm install:*)",
+      "Read(//var/folders/m9/bmd68xns529_0c3zqcpprwrw0000gn/T/TemporaryItems/NSIRD_screencaptureui_7eYx0F/**)",
+      "Bash(kill:*)",
+      "Read(//var/folders/m9/bmd68xns529_0c3zqcpprwrw0000gn/T/TemporaryItems/NSIRD_screencaptureui_uC3cGZ/**)",
+      "Bash(cat:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm run build)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

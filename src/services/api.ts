@@ -17,7 +17,7 @@ class ApiClient {
     this.baseUrl = 'http://localhost:8001/api'
     this.http = axios.create({
       baseURL: this.baseUrl,
-      timeout: 10000,
+      timeout: 300000, // 5 minutes for long-running operations like face data import
       headers: {
         'Content-Type': 'application/json',
       },
@@ -514,18 +514,127 @@ class ApiClient {
     return response.data
   }
 
-  async getFaceData(nodeId: string, faceId: string): Promise<{
-    success: boolean
-    face_id: string
-    segmentation_polygon?: any
-    landmarks?: any
-    message: string
-  }> {
-    const response = await this.http.get(`/nodes/${nodeId}/face-data/${faceId}`)
+  // Detection Profile Management
+  async createDetectionProfile(nodeId: string, name: string, settings: any): Promise<{ success: boolean; profile_name: string; message: string }> {
+    const response = await this.http.post(`/nodes/${nodeId}/detection-profiles`, { name, settings })
+    return response.data
+  }
+
+  async listDetectionProfiles(nodeId: string): Promise<{ success: boolean; profiles: string[]; count: number }> {
+    const response = await this.http.get(`/nodes/${nodeId}/detection-profiles`)
+    return response.data
+  }
+
+  async deleteDetectionProfile(nodeId: string, profileName: string): Promise<{ success: boolean; profile_name: string; message: string }> {
+    const response = await this.http.delete(`/nodes/${nodeId}/detection-profiles/${profileName}`)
+    return response.data
+  }
+
+  async resetDetectionProfile(nodeId: string, profileName: string): Promise<{ success: boolean; profile_name: string; message: string }> {
+    const response = await this.http.put(`/nodes/${nodeId}/detection-profiles/${profileName}/reset`)
+    return response.data
+  }
+
+  // Face Data Operations
+  async updateParentFrames(nodeId: string, inputDir: string, parentFrameFolder: string): Promise<{ success: boolean; message: string; files_updated: number }> {
+    const response = await this.http.post(`/nodes/${nodeId}/update-parent-frames`, { input_dir: inputDir, parent_frame_folder: parentFrameFolder })
+    return response.data
+  }
+
+  async getFaceData(nodeId: string, faceId: string, inputDir: string): Promise<{ success: boolean; message: string; landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }> {
+    const response = await this.http.get(`/nodes/${nodeId}/face-data/${faceId}?input_dir=${encodeURIComponent(inputDir)}`)
+    return response.data
+  }
+
+  async getFaceDataBatch(nodeId: string, faceIds: string[], inputDir: string): Promise<{ success: boolean; message: string; results: Record<string, { success: boolean; message: string; landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }> }> {
+    const response = await this.http.post(`/nodes/${nodeId}/face-data-batch`, {
+      face_ids: faceIds,
+      input_dir: inputDir
+    })
+    return response.data
+  }
+
+  async getNodeProgress(nodeId: string): Promise<{ success: boolean; progress?: number; message?: string }> {
+    const response = await this.http.get(`/nodes/${nodeId}/progress`)
+    return response.data
+  }
+
+  async importFaceData(nodeId: string, inputDir: string): Promise<{ success: boolean; message: string; faces_imported: number; faces_with_data?: number; faces_with_landmarks?: number; faces_with_segmentation?: number; total_images?: number }> {
+    const response = await this.http.post(`/nodes/${nodeId}/import-face-data`, { input_dir: inputDir })
+    return response.data
+  }
+
+  async copyEmbeddedData(nodeId: string, inputDir: string, facesFolder: string, onlyParentData: boolean, recalculate: boolean): Promise<{ success: boolean; message: string; files_copied: number }> {
+    const response = await this.http.post(`/nodes/${nodeId}/copy-embedded-data`, { 
+      input_dir: inputDir, 
+      faces_folder: facesFolder,
+      only_parent_data: onlyParentData,
+      recalculate: recalculate
+    })
+    return response.data
+  }
+
+  // XSeg Operations
+  async trainXSeg(nodeId: string, inputDir: string, xsegModelPath: string): Promise<{ success: boolean; message: string; model_path: string }> {
+    const response = await this.http.post(`/nodes/${nodeId}/xseg/train`, { input_dir: inputDir, xseg_model_path: xsegModelPath })
+    return response.data
+  }
+
+  async applyXSeg(nodeId: string, inputDir: string, xsegModelPath: string): Promise<{ success: boolean; message: string; masks_generated: number }> {
+    const response = await this.http.post(`/nodes/${nodeId}/xseg/apply`, { input_dir: inputDir, xseg_model_path: xsegModelPath })
+    return response.data
+  }
+
+  async getXSegStatus(nodeId: string): Promise<{ success: boolean; status: string; progress: number; epoch: number; loss: number | null; message: string }> {
+    const response = await this.http.get(`/nodes/${nodeId}/xseg/status`)
     return response.data
   }
 
   // Stream face images progressively
+  // Save segmentation polygons for a face
+  async saveSegmentation(nodeId: string, faceId: string, inputDir: string, segmentationPolygons: number[][][]): Promise<{ success: boolean; message: string }> {
+    const response = await this.http.post('/face-editor/save-segmentation', {
+      face_id: faceId,
+      input_dir: inputDir,
+      segmentation_polygons: segmentationPolygons
+    })
+    return response.data
+  }
+
+  // Import face data from DFL images
+  async importDFLFaceData(nodeId: string, inputDir: string): Promise<{
+    success: boolean
+    message: string
+    faces_imported: number
+    faces_with_data: number
+    faces_with_landmarks: number
+    faces_with_segmentation: number
+    total_images: number
+  }> {
+    const response = await this.http.post('/face-editor/import-face-data', {
+      node_id: nodeId,
+      input_dir: inputDir
+    })
+    return response.data
+  }
+
+  // Embed mask polygons into images
+  async embedMasks(nodeId: string, inputDir: string, eyebrowExpandMod: number = 1, faceIds?: string[]): Promise<{
+    success: boolean
+    message: string
+    processed_count: number
+    success_count: number
+    failure_count: number
+  }> {
+    const response = await this.http.post('/face-editor/embed-masks', {
+      node_id: nodeId,
+      input_dir: inputDir,
+      eyebrow_expand_mod: eyebrowExpandMod,
+      face_ids: faceIds
+    })
+    return response.data
+  }
+
   async streamFaceImages(nodeId: string, inputDir: string, onFaceReceived: (face: any) => void, onComplete: () => void, onError: (error: string) => void): Promise<void> {
     try {
       const url = `${this.baseUrl}/nodes/${nodeId}/face-images-stream?input_dir=${encodeURIComponent(inputDir)}`

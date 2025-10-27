@@ -15,6 +15,7 @@ interface FaceImage {
   landmarks?: number[][]
   selected?: boolean
   active?: boolean
+  hasFaceData?: boolean  // Track if face data has been imported
 }
 
 interface DetectionSettings {
@@ -38,12 +39,28 @@ const AdvancedFaceEditorView: React.FC = () => {
     similarityThreshold: 0.6,
     eyebrowExpandMod: 1
   })
-  const [viewMode, setViewMode] = useState<'normal' | 'segmentation' | 'alignments'>('normal')
+  const [showSegmentation, setShowSegmentation] = useState(false)
+  const [showAlignments, setShowAlignments] = useState(false)
   const [showConsole, setShowConsole] = useState(false)
   const [showDetectionPanel, setShowDetectionPanel] = useState(true)
   const [selectedFaceId, setSelectedFaceId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [consoleLogs, setConsoleLogs] = useState<string[]>([])
+
+  // Faces Editor State Management
+  const [detectionProfiles, setDetectionProfiles] = useState<string[]>(['default'])
+  const [selectedProfile, setSelectedProfile] = useState<string>('default')
+  const [parentFrameFolder, setParentFrameFolder] = useState<string>('')
+  const [facesFolder, setFacesFolder] = useState<string>('')
+  const [xsegModelPath, setXsegModelPath] = useState<string>('')
+  const [onlyParentData, setOnlyParentData] = useState<boolean>(false)
+  const [recalculateFaceData, setRecalculateFaceData] = useState<boolean>(false)
+  const [setFacesToParent, setSetFacesToParent] = useState<boolean>(false)
+
+  // Import progress tracking
+  const [importProgress, setImportProgress] = useState<number>(0)
+  const [importMessage, setImportMessage] = useState<string>('')
+  const [isImporting, setIsImporting] = useState<boolean>(false)
 
   // Initialize settings from node parameters
   useEffect(() => {
@@ -91,8 +108,11 @@ const AdvancedFaceEditorView: React.FC = () => {
           console.log('Received all face images:', response.face_images.length)
           addConsoleLog(`Loaded ${response.face_images.length} face images`)
           
-          // Sort face images by filename for consistent ordering
-          const sortedFaceImages = (response.face_images || []).sort((a, b) => a.filename.localeCompare(b.filename))
+          // Sort face images by filename for consistent ordering and add hasFaceData property
+          const sortedFaceImages = (response.face_images || []).sort((a, b) => a.filename.localeCompare(b.filename)).map(face => ({
+            ...face,
+            hasFaceData: false  // Initially assume no face data until import
+          }))
           setFaceImages(sortedFaceImages)
           setLoading(false)
         } else {
@@ -140,8 +160,11 @@ const AdvancedFaceEditorView: React.FC = () => {
       })
 
       if (response.success) {
-        // Sort face images by filename for consistent ordering
-        const sortedFaceImages = (response.face_images || []).sort((a, b) => a.filename.localeCompare(b.filename))
+        // Sort face images by filename for consistent ordering and add hasFaceData property
+        const sortedFaceImages = (response.face_images || []).sort((a, b) => a.filename.localeCompare(b.filename)).map(face => ({
+          ...face,
+          hasFaceData: false  // Initially assume no face data until import
+        }))
         setFaceImages(sortedFaceImages)
         addConsoleLog(`Found ${sortedFaceImages.length} face images`)
       } else {
@@ -210,29 +233,37 @@ const AdvancedFaceEditorView: React.FC = () => {
 
   // Embed mask polygons
   const handleEmbedPolygons = useCallback(async () => {
-    if (!currentNode) return
+    if (!currentNode?.parameters?.input_dir) {
+      addConsoleLog('Error: No input directory specified')
+      return
+    }
+
+    const selectedFaces = faceImages.filter(f => f.selected)
+    const faceIds = selectedFaces.length > 0 ? selectedFaces.map(f => f.id) : undefined
 
     setLoading(true)
-    addConsoleLog('Embedding mask polygons into images...')
+    addConsoleLog(`Embedding mask polygons ${faceIds ? `for ${faceIds.length} selected faces` : 'for all faces'}...`)
 
     try {
-      const response = await apiClient.embedPolygons(currentNode.id, {
-        face_images: faceImages,
-        eyebrow_expand_mod: detectionSettings.eyebrowExpandMod
-      })
+      const response = await apiClient.embedMasks(
+        currentNode.id,
+        currentNode.parameters.input_dir,
+        detectionSettings.eyebrowExpandMod,
+        faceIds
+      )
 
       if (response.success) {
-        addConsoleLog(`Embedded polygons for ${response.processed_count || 0} faces`)
-        addConsoleLog('Images ready for training!')
+        addConsoleLog(`Embed complete: ${response.success_count} succeeded, ${response.failure_count} failed`)
+        addConsoleLog('Images ready for DFL training!')
       } else {
-        addConsoleLog(`Error: ${response.error}`)
+        addConsoleLog(`Error: ${response.message}`)
       }
     } catch (error) {
-      addConsoleLog(`Error: ${error}`)
+      addConsoleLog(`Error embedding polygons: ${error}`)
     } finally {
       setLoading(false)
     }
-  }, [currentNode, detectionSettings.eyebrowExpandMod, addConsoleLog])
+  }, [currentNode, faceImages, detectionSettings.eyebrowExpandMod, addConsoleLog])
 
   // Handle face selection
   const handleFaceSelect = useCallback((faceId: string) => {
@@ -270,6 +301,223 @@ const AdvancedFaceEditorView: React.FC = () => {
     setConsoleLogs([])
   }, [])
 
+  // Detection Profile Handlers
+  const handleAddDetectionProfile = useCallback(async (name: string) => {
+    if (!currentNode) return
+    
+    try {
+      const response = await apiClient.createDetectionProfile(currentNode.id, name, detectionSettings)
+      if (response.success) {
+        setDetectionProfiles(prev => [...prev, name])
+        addConsoleLog(`Detection profile '${name}' created`)
+      } else {
+        addConsoleLog(`Error creating profile: ${response.message}`)
+      }
+    } catch (error) {
+      addConsoleLog(`Error: ${error}`)
+    }
+  }, [currentNode, detectionSettings, addConsoleLog])
+
+  const handleRemoveDetectionProfile = useCallback(async (name: string) => {
+    if (!currentNode) return
+    
+    try {
+      const response = await apiClient.deleteDetectionProfile(currentNode.id, name)
+      if (response.success) {
+        setDetectionProfiles(prev => prev.filter(p => p !== name))
+        if (selectedProfile === name) {
+          setSelectedProfile('default')
+        }
+        addConsoleLog(`Detection profile '${name}' deleted`)
+      } else {
+        addConsoleLog(`Error deleting profile: ${response.message}`)
+      }
+    } catch (error) {
+      addConsoleLog(`Error: ${error}`)
+    }
+  }, [currentNode, selectedProfile, addConsoleLog])
+
+  const handleResetDetectionProfile = useCallback(async (name: string) => {
+    if (!currentNode) return
+    
+    try {
+      const response = await apiClient.resetDetectionProfile(currentNode.id, name)
+      if (response.success) {
+        addConsoleLog(`Detection profile '${name}' reset to defaults`)
+      } else {
+        addConsoleLog(`Error resetting profile: ${response.message}`)
+      }
+    } catch (error) {
+      addConsoleLog(`Error: ${error}`)
+    }
+  }, [currentNode, addConsoleLog])
+
+  // Face Data Operation Handlers
+  const handleUpdateParentFrames = useCallback(async () => {
+    if (!currentNode || !parentFrameFolder) return
+    
+    setLoading(true)
+    addConsoleLog('Updating parent frame references...')
+    
+    try {
+      const response = await apiClient.updateParentFrames(
+        currentNode.id, 
+        currentNode.parameters?.input_dir || '', 
+        parentFrameFolder
+      )
+      if (response.success) {
+        addConsoleLog(`Updated ${response.files_updated} files`)
+      } else {
+        addConsoleLog(`Error: ${response.message}`)
+      }
+    } catch (error) {
+      addConsoleLog(`Error: ${error}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [currentNode, parentFrameFolder, addConsoleLog])
+
+  const handleImportFaceData = useCallback(async () => {
+    if (!currentNode) return
+    
+    setLoading(true)
+    setIsImporting(true)
+    setImportProgress(0)
+    setImportMessage('Starting import...')
+    addConsoleLog('Importing face data...')
+    addConsoleLog('This may take several minutes for large datasets...')
+    
+    // Start progress polling
+    const progressInterval = setInterval(async () => {
+      try {
+        const progressResponse = await apiClient.getNodeProgress(currentNode.id)
+        if (progressResponse.success && progressResponse.progress !== undefined) {
+          setImportProgress(progressResponse.progress)
+          setImportMessage(progressResponse.message || 'Processing images...')
+        }
+      } catch (error) {
+        // Ignore progress polling errors
+      }
+    }, 1000) // Poll every second
+    
+    try {
+      const response = await apiClient.importFaceData(currentNode.id, currentNode.parameters?.input_dir || '')
+      clearInterval(progressInterval) // Stop polling
+      
+      if (response.success) {
+        setImportProgress(100)
+        setImportMessage('Import completed!')
+        addConsoleLog(`Imported ${response.faces_imported} faces (${response.faces_with_data} had embedded data)`)
+        addConsoleLog(`Landmarks found: ${response.faces_with_landmarks || 0}`)
+        addConsoleLog(`Segmentation polygons found: ${response.faces_with_segmentation || 0}`)
+        addConsoleLog(`Total images processed: ${response.total_images}`)
+        
+        // Mark all face images as having face data (they now have imported metadata)
+        setFaceImages(prev => prev.map(face => ({
+          ...face,
+          hasFaceData: true
+        })))
+        
+        addConsoleLog('Face thumbnails now show blue outline indicating imported face data')
+      } else {
+        setImportMessage('Import failed')
+        addConsoleLog(`Error: ${response.message}`)
+      }
+    } catch (error) {
+      clearInterval(progressInterval) // Stop polling
+      setImportMessage('Import failed')
+      addConsoleLog(`Error: ${error}`)
+    } finally {
+      setLoading(false)
+      // Keep progress bar visible for a moment to show completion
+      setTimeout(() => {
+        setIsImporting(false)
+        setImportProgress(0)
+        setImportMessage('')
+      }, 2000)
+    }
+  }, [currentNode, addConsoleLog])
+
+  const handleCopyEmbeddedData = useCallback(async () => {
+    if (!currentNode || !facesFolder) return
+    
+    setLoading(true)
+    addConsoleLog('Copying embedded data...')
+    
+    try {
+      const response = await apiClient.copyEmbeddedData(
+        currentNode.id,
+        currentNode.parameters?.input_dir || '',
+        facesFolder,
+        onlyParentData,
+        recalculateFaceData
+      )
+      if (response.success) {
+        addConsoleLog(`Copied ${response.files_copied} files`)
+      } else {
+        addConsoleLog(`Error: ${response.message}`)
+      }
+    } catch (error) {
+      addConsoleLog(`Error: ${error}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [currentNode, facesFolder, onlyParentData, recalculateFaceData, addConsoleLog])
+
+  // XSeg Operation Handlers
+  const handleTrainXSeg = useCallback(async () => {
+    if (!currentNode || !xsegModelPath) return
+    
+    setLoading(true)
+    addConsoleLog('Training XSeg model...')
+    
+    try {
+      const response = await apiClient.trainXSeg(
+        currentNode.id,
+        currentNode.parameters?.input_dir || '',
+        xsegModelPath
+      )
+      if (response.success) {
+        addConsoleLog(`XSeg training started: ${response.model_path}`)
+      } else {
+        addConsoleLog(`Error: ${response.message}`)
+      }
+    } catch (error) {
+      addConsoleLog(`Error: ${error}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [currentNode, xsegModelPath, addConsoleLog])
+
+  const handleApplyXSeg = useCallback(async () => {
+    if (!currentNode || !xsegModelPath) return
+    
+    setLoading(true)
+    addConsoleLog('Applying XSeg model...')
+    
+    try {
+      const response = await apiClient.applyXSeg(
+        currentNode.id,
+        currentNode.parameters?.input_dir || '',
+        xsegModelPath
+      )
+      if (response.success) {
+        addConsoleLog(`Generated ${response.masks_generated} masks`)
+      } else {
+        addConsoleLog(`Error: ${response.message}`)
+      }
+    } catch (error) {
+      addConsoleLog(`Error: ${error}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [currentNode, xsegModelPath, addConsoleLog])
+
+  const handleOpenXSegEditor = useCallback(() => {
+    addConsoleLog('Opening XSeg Editor...')
+    // XSeg editor opening would be implemented here
+  }, [addConsoleLog])
+
   return (
     <div className="h-full w-full flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       {/* Top Toolbar */}
@@ -280,37 +528,27 @@ const AdvancedFaceEditorView: React.FC = () => {
               Advanced Face Editor
             </h2>
             
-            {/* View Mode Buttons */}
+            {/* Overlay Toggle Buttons */}
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => setViewMode('normal')}
+                onClick={() => setShowSegmentation(!showSegmentation)}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
-                  viewMode === 'normal'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                Normal
-              </button>
-              <button
-                onClick={() => setViewMode('segmentation')}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
-                  viewMode === 'segmentation'
+                  showSegmentation
                     ? 'bg-green-500 text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
-                Show Segmentation
+                {showSegmentation ? 'Hide' : 'Show'} Segmentation
               </button>
               <button
-                onClick={() => setViewMode('alignments')}
+                onClick={() => setShowAlignments(!showAlignments)}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
-                  viewMode === 'alignments'
+                  showAlignments
                     ? 'bg-purple-500 text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
-                Show Alignments
+                {showAlignments ? 'Hide' : 'Show'} Alignments
               </button>
             </div>
           </div>
@@ -343,7 +581,8 @@ const AdvancedFaceEditorView: React.FC = () => {
         <div className="flex-1 overflow-hidden">
           <OptimizedFaceGrid
             faceImages={faceImages}
-            viewMode={viewMode}
+            showSegmentation={showSegmentation}
+            showAlignments={showAlignments}
             onFaceSelect={handleFaceSelect}
             onFaceMultiSelect={handleFaceMultiSelect}
             loading={loading}
@@ -371,6 +610,39 @@ const AdvancedFaceEditorView: React.FC = () => {
                 updateNode(currentNode.id, { parameters: { ...currentNode.parameters, input_dir: dir } })
               }
             }}
+            // Detection Profiles
+            detectionProfiles={detectionProfiles}
+            selectedProfile={selectedProfile}
+            onProfileChange={setSelectedProfile}
+            onAddProfile={handleAddDetectionProfile}
+            onRemoveProfile={handleRemoveDetectionProfile}
+            onResetProfile={handleResetDetectionProfile}
+            // Parent Frame Folder
+            parentFrameFolder={parentFrameFolder}
+            onParentFrameFolderChange={setParentFrameFolder}
+            // Faces Folder
+            facesFolder={facesFolder}
+            onFacesFolderChange={setFacesFolder}
+            onlyParentData={onlyParentData}
+            onOnlyParentDataChange={setOnlyParentData}
+            recalculateFaceData={recalculateFaceData}
+            onRecalculateFaceDataChange={setRecalculateFaceData}
+            onCopyEmbeddedData={handleCopyEmbeddedData}
+            onOpenXSegEditor={handleOpenXSegEditor}
+            // XSeg Model
+            xsegModelPath={xsegModelPath}
+            onXsegModelPathChange={setXsegModelPath}
+            onTrainXSeg={handleTrainXSeg}
+            onApplyXSeg={handleApplyXSeg}
+            // Embedded Detections
+            setFacesToParent={setFacesToParent}
+            onSetFacesToParentChange={setSetFacesToParent}
+            onUpdateParentFrames={handleUpdateParentFrames}
+            onImportFaceData={handleImportFaceData}
+            // Progress tracking
+            importProgress={importProgress}
+            importMessage={importMessage}
+            isImporting={isImporting}
           />
         )}
       </div>
@@ -384,12 +656,16 @@ const AdvancedFaceEditorView: React.FC = () => {
       )}
 
       {/* Face Editor Modal */}
-      {selectedFaceId && (
+      {selectedFaceId && currentNode && (
         <FaceEditorModal
           faceImage={faceImages.find(f => f.id === selectedFaceId)}
+          faceImages={faceImages}
+          nodeId={currentNode.id}
+          inputDir={currentNode.parameters?.input_dir || ''}
+          eyebrowExpandMod={detectionSettings.eyebrowExpandMod}
           onClose={() => setSelectedFaceId(null)}
           onUpdateFace={(faceId, updates) => {
-            setFaceImages(prev => prev.map(face => 
+            setFaceImages(prev => prev.map(face =>
               face.id === faceId ? { ...face, ...updates } : face
             ))
           }}

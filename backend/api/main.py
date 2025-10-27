@@ -11,7 +11,7 @@ from pathlib import Path
 backend_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_dir))
 
-from api.routes import workflow, execution, nodes, gpu, errors, presets
+from api.routes import workflow, execution, nodes, gpu, errors, presets, face_editor
 from api.websocket import websocket_manager
 
 app = FastAPI(
@@ -36,6 +36,7 @@ app.include_router(nodes.router, prefix="/api/nodes", tags=["nodes"])
 app.include_router(gpu.router, prefix="/api/gpu", tags=["gpu"])
 app.include_router(errors.router, prefix="/api/errors", tags=["errors"])
 app.include_router(presets.router, prefix="/api/presets", tags=["presets"])
+app.include_router(face_editor.router, prefix="/api/face-editor", tags=["face-editor"])
 
 # WebSocket endpoint
 @app.websocket("/ws")

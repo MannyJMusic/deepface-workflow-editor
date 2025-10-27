@@ -8,7 +8,6 @@ import {
   WorkflowExecution,
   NodeStatus,
   NodeType,
-  NodePreset,
   ViewMode
 } from '../types'
 
@@ -85,7 +84,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
       execution: null,
       isExecuting: false,
       nodeDefinitions: [],
-      viewMode: 'workflow',
+      viewMode: 'single-node',
       activeNodeInSingleMode: null,
       
       // Workflow actions

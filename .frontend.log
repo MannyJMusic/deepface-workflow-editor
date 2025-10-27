@@ -1,973 +1,162 @@
 
-=== Starting at 2025-10-26T23:59:50.783Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-(node:61687) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-
-  VITE v5.4.21  ready in 971 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-5:12:00 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-5:12:02 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-5:12:02 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-5:14:27 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-5:14:30 PM [vite] hmr update /src/index.css, /src/components/ExecutionControls.tsx, /src/components/NodeEditor.tsx, /src/components/LogViewer.tsx, /src/components/NodePalette.tsx, /src/components/GPUMonitor.tsx, /src/components/ErrorMonitor.tsx, /src/components/GPUSelector.tsx
-5:14:30 PM [vite] hmr update /src/index.css, /src/components/ExecutionControls.tsx, /src/components/NodeEditor.tsx, /src/components/LogViewer.tsx, /src/components/NodePalette.tsx, /src/components/GPUMonitor.tsx, /src/components/ErrorMonitor.tsx, /src/components/GPUSelector.tsx
-5:14:40 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-
-=== Starting at 2025-10-27T00:29:34.685Z ===
+=== Starting at 2025-10-27T07:34:42.770Z ===
 
 > deepface-workflow-editor@1.0.0 dev:react
 > vite
 
 [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
 
-  VITE v5.4.21  ready in 211 ms
+  VITE v5.4.21  ready in 209 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
-(node:96744) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
+(node:93275) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-5:30:55 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/ExecutionControls.tsx, /src/components/NodePalette.tsx, /src/components/LogViewer.tsx, /src/components/GPUMonitor.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUSelector.tsx
-5:31:02 PM [vite] hmr update /src/App.tsx, /src/index.css
-5:31:33 PM [vite] hmr update /src/App.tsx, /src/index.css
-5:31:33 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/ExecutionControls.tsx, /src/components/NodePalette.tsx, /src/components/LogViewer.tsx, /src/components/GPUMonitor.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUSelector.tsx
-5:31:33 PM [vite] hmr update /src/App.tsx, /src/index.css
-5:31:33 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/ExecutionControls.tsx, /src/components/NodePalette.tsx, /src/components/LogViewer.tsx, /src/components/GPUMonitor.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUSelector.tsx
-5:34:14 PM [vite] hmr update /src/components/DirectoryPathPicker.tsx, /src/index.css
-5:34:21 PM [vite] hmr update /src/components/DirectoryPathPicker.tsx, /src/index.css
-5:34:23 PM [vite] hmr update /src/components/DirectoryPathPicker.tsx, /src/index.css
-5:34:28 PM [vite] hmr update /src/components/FilePathPicker.tsx, /src/index.css
-5:34:31 PM [vite] hmr update /src/components/FilePathPicker.tsx, /src/index.css
-5:34:43 PM [vite] hmr update /src/components/DirectoryPathPicker.tsx, /src/index.css
-5:34:43 PM [vite] hmr update /src/components/DirectoryPathPicker.tsx, /src/index.css
-5:34:46 PM [vite] hmr update /src/components/DirectoryPathPicker.tsx, /src/index.css
-5:34:49 PM [vite] hmr update /src/components/FilePathPicker.tsx, /src/index.css
-5:34:52 PM [vite] hmr update /src/components/FilePathPicker.tsx, /src/index.css
-5:35:01 PM [vite] hmr update /src/components/FilePathPicker.tsx, /src/index.css
-5:35:01 PM [vite] page reload src/types/electron.d.ts
-5:35:01 PM [vite] hmr update /src/components/DirectoryPathPicker.tsx, /src/index.css
-5:35:01 PM [vite] hmr update /src/components/FilePathPicker.tsx, /src/index.css
+12:35:21 AM [vite] warning: Duplicate member "getFaceData" in class body
+553|    }
+554|  
+555|    async getFaceData(nodeId: string, faceId: string, inputDir: string): Promise<{ success: boolean; message: string; landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }> {
+   |          ^
+556|      const response = await this.http.get(`/nodes/${nodeId}/face-data/${faceId}?input_dir=${encodeURIComponent(inputDir)}`)
+557|      return response.data
 
-=== Starting at 2025-10-27T00:47:03.547Z ===
+  Plugin: vite:esbuild
+  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts
+
+=== Starting at 2025-10-27T07:53:05.584Z ===
+
+> deepface-workflow-editor@1.0.0 dev:react
+> vite
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+  VITE v5.4.21  ready in 214 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+(node:19265) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+12:53:13 AM [vite] warning: Duplicate member "getFaceData" in class body
+553|    }
+554|  
+555|    async getFaceData(nodeId: string, faceId: string, inputDir: string): Promise<{ success: boolean; message: string; landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }> {
+   |          ^
+556|      const response = await this.http.get(`/nodes/${nodeId}/face-data/${faceId}?input_dir=${encodeURIComponent(inputDir)}`)
+557|      return response.data
+
+  Plugin: vite:esbuild
+  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts
+
+=== Starting at 2025-10-27T08:38:10.971Z ===
 
 > deepface-workflow-editor@1.0.0 dev:react
 > vite
 
 [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
 Re-optimizing dependencies because lockfile has changed
-(node:15834) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
+(node:47269) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
-  VITE v5.4.21  ready in 574 ms
+  VITE v5.4.21  ready in 649 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
-6:14:13 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ErrorMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ExecutionControls.tsx, /src/components/GPUMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUSelector.tsx
-6:14:17 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-6:16:28 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-6:16:28 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ErrorMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ExecutionControls.tsx, /src/components/GPUMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUSelector.tsx
+1:38:43 AM [vite] warning: Duplicate member "getFaceData" in class body
+553|    }
+554|  
+555|    async getFaceData(nodeId: string, faceId: string, inputDir: string): Promise<{ success: boolean; message: string; landmarks?: number[][]; segmentation?: number[][][]; face_type?: string; source_filename?: string }> {
+   |          ^
+556|      const response = await this.http.get(`/nodes/${nodeId}/face-data/${faceId}?input_dir=${encodeURIComponent(inputDir)}`)
+557|      return response.data
 
-=== Starting at 2025-10-27T01:32:13.072Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-
-  VITE v5.4.21  ready in 257 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-(node:63866) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-
-=== Starting at 2025-10-27T01:38:02.919Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-
-  VITE v5.4.21  ready in 176 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-(node:70166) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-
-=== Starting at 2025-10-27T01:39:49.932Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-
-  VITE v5.4.21  ready in 213 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-(node:72576) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-6:46:56 PM [vite] page reload src/types/index.ts
-6:46:57 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:46:57 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:46:59 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:46:59 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:47:01 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:47:04 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:47:06 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:47:07 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx
-6:47:51 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ExecutionControls.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/GPUSelector.tsx
-6:47:51 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ExecutionControls.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/GPUSelector.tsx
-6:47:54 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ExecutionControls.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/GPUSelector.tsx
-6:47:54 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ExecutionControls.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/GPUSelector.tsx
-6:48:33 PM [vite] hmr update /src/App.tsx, /src/index.css
-6:48:35 PM [vite] hmr update /src/App.tsx, /src/index.css
-6:48:36 PM [vite] hmr update /src/App.tsx, /src/index.css
-6:48:43 PM [vite] hmr update /src/App.tsx, /src/index.css
-6:48:43 PM [vite] hmr update /src/App.tsx, /src/index.css
-6:48:54 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:48:54 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:48:57 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:48:57 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:49:00 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:49:02 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:49:06 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:49:16 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-6:49:16 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-6:49:20 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-6:49:20 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-6:49:23 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-6:49:27 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-6:49:30 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-6:49:30 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-6:49:36 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-6:49:40 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-6:50:01 PM [vite] hmr update /src/index.css, /src/App.tsx, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ViewModeToggle.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx
-6:50:01 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ExecutionControls.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/GPUSelector.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/WorkflowCanvas.tsx
-6:50:01 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ViewModeToggle.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx
-6:50:01 PM [vite] hmr update /src/components/ViewModeToggle.tsx, /src/index.css
-6:50:01 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-6:50:01 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ExecutionControls.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/GPUSelector.tsx, /src/components/SingleNodeView.tsx, /src/components/WorkflowCanvas.tsx
-6:50:01 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx
-6:50:01 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-6:50:02 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:50:02 PM [vite] hmr update /src/App.tsx, /src/index.css
-6:50:02 PM [vite] page reload src/components/ViewModeToggle.tsx
-6:50:02 PM [vite] page reload src/components/NodePresetManager.tsx
-6:50:02 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-6:50:02 PM [vite] page reload src/components/SingleNodeView.tsx
-6:50:02 PM [vite] page reload src/App.tsx
-
-=== Starting at 2025-10-27T01:54:27.450Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-
-  VITE v5.4.21  ready in 260 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-(node:88178) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-
-=== Starting at 2025-10-27T01:58:11.924Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-
-  VITE v5.4.21  ready in 231 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-(node:93104) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-6:59:54 PM [vite] hmr update /src/App.tsx, /src/index.css
-6:59:58 PM [vite] hmr update /src/App.tsx, /src/index.css
-7:00:07 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:00:13 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:00:13 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:00:18 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:00:18 PM [vite] hmr update /src/App.tsx, /src/index.css
-
-=== Starting at 2025-10-27T02:41:39.938Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-(node:37489) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-
-  VITE v5.4.21  ready in 561 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-
-=== Starting at 2025-10-27T02:43:03.238Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-(node:39172) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-
-  VITE v5.4.21  ready in 615 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-7:44:21 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:44:21 PM [vite] hmr update /src/components/NodeEditor.tsx, /src/index.css
-7:45:09 PM [vite] page reload src/types/electron.d.ts
-7:45:14 PM [vite] changed tsconfig file detected: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
-7:45:14 PM [vite] changed tsconfig file detected: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
-7:45:26 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:45:30 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:45:36 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:45:39 PM [vite] hmr update /src/App.tsx, /src/index.css
-7:45:44 PM [vite] hmr update /src/index.css, /src/App.tsx, /src/components/WorkflowCanvas.tsx, /src/components/ViewModeToggle.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-7:46:31 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:46:31 PM [vite] hmr update /src/App.tsx, /src/index.css
-7:46:31 PM [vite] changed tsconfig file detected: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
-7:46:31 PM [vite] hmr update /src/index.css, /src/App.tsx, /src/components/WorkflowCanvas.tsx, /src/components/ViewModeToggle.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-7:46:31 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:47:35 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:48:16 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:48:41 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ViewModeToggle.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-7:49:27 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:49:29 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:49:36 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:49:51 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:50:32 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:50:32 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-7:50:32 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ViewModeToggle.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-7:50:32 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:50:32 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:50:32 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ViewModeToggle.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-7:51:20 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:51:20 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:51:24 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:51:24 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:51:49 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:51:57 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:52:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:52:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:53:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:53:25 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:53:31 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:53:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:53:54 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-7:55:14 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ViewModeToggle.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-7:55:24 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:55:39 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:55:39 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/WorkflowCanvas.tsx, /src/components/ViewModeToggle.tsx, /src/components/ExecutionControls.tsx, /src/components/ProgressMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-7:56:58 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:57:25 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:57:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:59:15 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-7:59:27 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:59:35 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:59:54 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-7:59:54 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:02:29 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:02:42 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:02:59 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:03:12 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:03:12 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:03:35 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:03:35 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:03:35 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:05:18 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:05:21 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:05:37 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:05:37 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:11:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:11:44 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:11:52 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:13:34 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:13:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:13:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:13:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:13:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:13:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:15:09 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:15:12 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:15:54 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:16:13 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-
-=== Starting at 2025-10-27T03:29:45.235Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-
-  VITE v5.4.21  ready in 317 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-(node:8600) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-8:34:14 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:34:21 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:34:26 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:34:26 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:34:51 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:34:51 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:34:54 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:36:15 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:36:22 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:36:22 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:43:18 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:43:22 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:43:37 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-8:43:48 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-8:45:00 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:45:00 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:45:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:45:17 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-8:45:17 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:45:17 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:45:17 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:46:39 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-8:46:40 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-8:47:16 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:47:21 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:47:21 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-8:47:21 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-8:48:19 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:48:19 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:48:29 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:48:29 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:48:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-8:51:16 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:51:18 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:51:21 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:51:25 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:51:25 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:51:33 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:52:25 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:52:28 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:52:40 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:52:49 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:52:57 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:53:59 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:54:01 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:56:04 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:56:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:58:56 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-8:59:03 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:01:13 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:01:16 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:02:44 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:02:48 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:02:52 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:02:52 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:06:21 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:06:24 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:06:28 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:06:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:06:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/index.css, /src/components/NodeEditor.tsx, /src/components/SingleNodeView.tsx
-9:07:53 PM [vite] hmr update /src/components/ViewModeToggle.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ErrorMonitor.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/NodeEditor.tsx, /src/components/WorkflowCanvas.tsx, /src/components/SingleNodeView.tsx, /src/components/ExecutionControls.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:07:53 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanelNew.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceEditorModal.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/ConsolePanel.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/ViewModeToggle.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/SingleNodeView.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/ErrorMonitor.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/NodeEditor.tsx, /src/components/WorkflowCanvas.tsx, /src/components/SingleNodeView.tsx, /src/components/ExecutionControls.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:07:53 PM [vite] hmr update /src/components/WorkflowCanvas.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanel.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/ConsolePanel.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceEditorModal.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/NodePresetManager.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:07:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/DetectionPanelNew.tsx, /src/index.css
-
-=== Starting at 2025-10-27T04:08:16.143Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-
-  VITE v5.4.21  ready in 179 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-(node:52218) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-9:09:30 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:14:14 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:14:20 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:14:22 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:14:22 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:14:30 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:14:33 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:14:40 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:14:41 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:10 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:34 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:44 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:45 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:54 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:18:54 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:19:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:20:34 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:20:34 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:20:37 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:20:52 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:20:55 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:20:55 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:21:01 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:21:01 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:22:10 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:22:20 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:23:02 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:23:59 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:24:01 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:24:03 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:24:10 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:24:28 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:24:31 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:24:35 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:24:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:26:09 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:26:12 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:26:14 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:26:18 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:26:18 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:26:25 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:26:25 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:30:23 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:30:55 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:30:55 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:30:59 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:31:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-9:31:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:31:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-9:33:40 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:40 PM [vite] Internal server error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
   Plugin: vite:esbuild
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24
-  
-  Expected "=>" but found "("
-  523|      return response.data
-  524|    // Stream face images progressively
-  525|    async streamFaceImages(nodeId: string, inputDir: string, onFaceReceived: (face: any) => void, onComplete: () => void, onError: (error: string) => void): Promise<void> {
-     |                          ^
-  526|      try {
-  527|        const response = await fetch(`${this.baseUrl}/nodes/${nodeId}/face-images-stream?input_dir=${encodeURIComponent(inputDir)}`)
-  
-      at failureErrorWithLog (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:1472:15)
-      at /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:755:50
-      at responseCallbacks.<computed> (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:622:9)
-      at handleIncomingPacket (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:677:12)
-      at Socket.readFromStdout (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:600:7)
-      at Socket.emit (node:events:519:28)
-      at addChunk (node:internal/streams/readable:561:12)
-      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-      at Readable.push (node:internal/streams/readable:392:5)
-      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
-9:33:40 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:525:24: ERROR: Expected "=>" but found "("
-9:33:49 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:33:49 PM [vite] Internal server error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-  Plugin: vite:esbuild
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7
-  
-  Expected ";" but found "const"
-  579|    }
-  580|  
-  581|  export const apiClient = new ApiClient()
-     |         ^
-  582|  export default apiClient
-  583|  
-  
-      at failureErrorWithLog (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:1472:15)
-      at /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:755:50
-      at responseCallbacks.<computed> (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:622:9)
-      at handleIncomingPacket (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:677:12)
-      at Socket.readFromStdout (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:600:7)
-      at Socket.emit (node:events:519:28)
-      at addChunk (node:internal/streams/readable:561:12)
-      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-      at Readable.push (node:internal/streams/readable:392:5)
-      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
-9:34:07 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:34:08 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:34:15 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:15 PM [vite] Internal server error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-  Plugin: vite:esbuild
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7
-  
-  Expected ";" but found "const"
-  579|    }
-  580|  
-  581|  export const apiClient = new ApiClient()
-     |         ^
-  582|  export default apiClient
-  583|  
-  
-      at failureErrorWithLog (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:1472:15)
-      at /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:755:50
-      at responseCallbacks.<computed> (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:622:9)
-      at handleIncomingPacket (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:677:12)
-      at Socket.readFromStdout (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:600:7)
-      at Socket.emit (node:events:519:28)
-      at addChunk (node:internal/streams/readable:561:12)
-      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-      at Readable.push (node:internal/streams/readable:392:5)
-      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
-9:34:15 PM [vite] Pre-transform error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-9:34:20 PM [vite] Internal server error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-  Plugin: vite:esbuild
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7
-  
-  Expected ";" but found "const"
-  579|    }
-  580|  
-  581|  export const apiClient = new ApiClient()
-     |         ^
-  582|  export default apiClient
-  583|  
-  
-      at failureErrorWithLog (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:1472:15)
-      at /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:755:50
-      at responseCallbacks.<computed> (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:622:9)
-      at handleIncomingPacket (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:677:12)
-      at Socket.readFromStdout (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:600:7)
-      at Socket.emit (node:events:519:28)
-      at addChunk (node:internal/streams/readable:561:12)
-      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-      at Readable.push (node:internal/streams/readable:392:5)
-      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
-9:34:32 PM [vite] Internal server error: Transform failed with 1 error:
-/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7: ERROR: Expected ";" but found "const"
-  Plugin: vite:esbuild
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts:581:7
-  
-  Expected ";" but found "const"
-  579|    }
-  580|  
-  581|  export const apiClient = new ApiClient()
-     |         ^
-  582|  export default apiClient
-  583|  
-  
-      at failureErrorWithLog (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:1472:15)
-      at /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:755:50
-      at responseCallbacks.<computed> (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:622:9)
-      at handleIncomingPacket (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:677:12)
-      at Socket.readFromStdout (/Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/esbuild/lib/main.js:600:7)
-      at Socket.emit (node:events:519:28)
-      at addChunk (node:internal/streams/readable:561:12)
-      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-      at Readable.push (node:internal/streams/readable:392:5)
-      at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
-9:35:14 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:35:22 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:37:08 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:37:08 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:37:13 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:37:17 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:37:17 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:37:17 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:39:35 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:39:40 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:39:44 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:39:48 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:39:48 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:39:48 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:39:48 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-9:48:52 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-9:48:52 PM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/NodePalette.tsx, /src/components/WorkflowCanvas.tsx, /src/components/GPUMonitor.tsx, /src/components/LogViewer.tsx, /src/components/ErrorMonitor.tsx, /src/components/NodeEditor.tsx, /src/components/ExecutionControls.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
+  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/services/api.ts
+1:40:49 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+1:40:49 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+1:40:49 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
 
-=== Starting at 2025-10-27T05:00:49.716Z ===
-
-> deepface-workflow-editor@1.0.0 dev:react
-> vite
-
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
-(node:7687) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-
-  VITE v5.4.21  ready in 610 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-10:03:14 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:03:16 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:03:16 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:03:18 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:03:22 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:03:22 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:04:15 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:04:21 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:04:21 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:04:29 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:05:52 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:05:55 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:05:59 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:05:59 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-10:06:03 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGrid.tsx, /src/index.css
-
-=== Starting at 2025-10-27T05:09:31.721Z ===
+=== Starting at 2025-10-27T08:55:39.527Z ===
 
 > deepface-workflow-editor@1.0.0 dev:react
 > vite
 
 [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
 
-  VITE v5.4.21  ready in 205 ms
+  VITE v5.4.21  ready in 222 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
-(node:17117) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
+(node:64393) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-10:10:34 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-10:10:37 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-10:10:37 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-10:10:43 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-10:10:43 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-10:10:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-10:10:50 PM [vite] hmr update /src/components/AdvancedFaceEditor/FaceGridNew.tsx, /src/index.css
-10:18:09 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:18:10 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:18:13 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:18:15 PM [vite] Pre-transform error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-10:18:16 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s2 = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-      at async viteTransformMiddleware (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
-10:18:19 PM [vite] hmr update /src/index.css, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-10:18:19 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s2 = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-10:18:19 PM [vite] Pre-transform error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-10:18:22 PM [vite] hmr update /src/index.css, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-10:18:22 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-10:18:22 PM [vite] Pre-transform error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-10:18:23 PM [vite] page reload src/workers/image-loader.worker.ts
-10:18:24 PM [vite] page reload src/workers/image-loader.worker.ts
-10:18:24 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-      at async viteTransformMiddleware (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
-10:18:28 PM [vite] page reload src/workers/image-loader.worker.ts
-10:18:28 PM [vite] hmr update /src/index.css, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-10:18:28 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:18:28 PM [vite] page reload src/hooks/useImageWorker.ts
-10:18:28 PM [vite] page reload src/components/VirtualScroll.tsx
-10:18:28 PM [vite] page reload src/workers/image-loader.worker.ts
-10:18:28 PM [vite] page reload src/hooks/useImageWorker.ts
-10:18:28 PM [vite] page reload src/components/VirtualScroll.tsx
-10:18:28 PM [vite] hmr update /src/index.css, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-10:18:28 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:18:29 PM [vite] Pre-transform error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-10:18:29 PM [vite] Pre-transform error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-10:18:29 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-      at async viteTransformMiddleware (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
-10:18:42 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-      at async viteTransformMiddleware (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
-10:19:15 PM [vite] hmr update /src/index.css, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-10:19:15 PM [vite] Pre-transform error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-10:19:15 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-      at async viteTransformMiddleware (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
-10:19:15 PM [vite] page reload src/hooks/index.ts
-10:19:16 PM [vite] Internal server error: Failed to resolve import "../hooks/useImageWorker" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:2:31
-  17 |  var _s = $RefreshSig$();
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../hooks/useImageWorker";
-     |                                  ^
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-  21 |  const ITEM_HEIGHT = 160;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 4)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-      at async viteTransformMiddleware (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
-10:19:17 PM [vite] hmr update /src/index.css, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-10:19:17 PM [vite] Pre-transform error: Failed to resolve import "./VirtualScroll" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-10:19:17 PM [vite] Internal server error: Failed to resolve import "./VirtualScroll" from "src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx:3:30
-  18 |  import { useState, useCallback, useMemo, useEffect } from "react";
-  19 |  import { useImageWorker } from "../../hooks";
-  20 |  import { VirtualScroll } from "./VirtualScroll";
-     |                                 ^
-  21 |  const ITEM_HEIGHT = 160;
-  22 |  const CONTAINER_HEIGHT = 600;
-      at TransformPluginContext._formatError (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
-      at TransformPluginContext.error (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
-      at normalizeUrl (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
-      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
-      at async Promise.all (index 5)
-      at async TransformPluginContext.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
-      at async PluginContainer.transform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
-      at async loadAndTransform (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
-      at async viteTransformMiddleware (file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
-10:19:19 PM [vite] hmr update /src/index.css, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx
-10:19:34 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:19:38 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:19:38 PM [vite] page reload src/hooks/index.ts
-10:19:38 PM [vite] page reload src/hooks/index.ts
-10:20:46 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:20:49 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:20:53 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:21:02 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:21:05 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:21:10 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:21:10 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:21:19 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:24:32 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:24:35 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:24:52 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:24:58 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
-10:24:58 PM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
-10:24:58 PM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+
+=== Starting at 2025-10-27T09:09:39.442Z ===
+
+> deepface-workflow-editor@1.0.0 dev:react
+> vite
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+(node:81247) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/postcss.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Volumes/MacOSNew/SourceCode/deepface-editor/deepface-workflow-editor/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  VITE v5.4.21  ready in 469 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+2:16:59 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:17:11 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:18:46 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:18:46 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:19:24 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:19:31 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:19:38 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:19:38 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:28:37 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:28:59 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:30:21 AM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
+2:30:53 AM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
+2:31:18 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:24 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:25 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:32 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:35 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:37 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:44 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:44 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:46 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:49 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:31:59 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:32:08 AM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
+2:32:08 AM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
+2:32:26 AM [vite] hmr update /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/index.css
+2:32:26 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:35:05 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:35:10 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:35:17 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:35:23 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:35:34 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:43:23 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:43:37 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:43:50 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:43:54 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:44:03 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:44:03 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:44:09 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:44:23 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:48:10 AM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/ExecutionControls.tsx, /src/components/WorkflowCanvas.tsx, /src/components/NodePalette.tsx, /src/components/ErrorMonitor.tsx, /src/components/LogViewer.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/components/AdvancedFaceEditor/FaceEditorModal.tsx, /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx
+2:48:23 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:48:34 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:48:34 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:48:47 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
+2:48:47 AM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/ExecutionControls.tsx, /src/components/WorkflowCanvas.tsx, /src/components/NodePalette.tsx, /src/components/ErrorMonitor.tsx, /src/components/LogViewer.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/components/AdvancedFaceEditor/FaceEditorModal.tsx, /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx
+2:48:47 AM [vite] hmr update /src/App.tsx, /src/index.css, /src/components/ExecutionControls.tsx, /src/components/WorkflowCanvas.tsx, /src/components/NodePalette.tsx, /src/components/ErrorMonitor.tsx, /src/components/LogViewer.tsx, /src/components/NodeEditor.tsx, /src/components/GPUMonitor.tsx, /src/components/SingleNodeView.tsx, /src/components/GPUSelector.tsx, /src/components/NodePresetManager.tsx, /src/components/AdvancedFaceEditor/AdvancedFaceEditorView.tsx, /src/components/AdvancedFaceEditor/FaceEditorModal.tsx, /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx
+2:48:47 AM [vite] hmr update /src/components/AdvancedFaceEditor/OptimizedFaceGrid.tsx, /src/index.css
