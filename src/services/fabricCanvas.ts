@@ -36,36 +36,90 @@ export async function addImageToCanvas(
   imageUrl: string,
   options?: IImageOptions
 ): Promise<Image> {
-  return new Promise((resolve, reject) => {
-    Image.fromURL(
-      imageUrl,
-      (img) => {
-        if (!img) {
-          reject(new Error('Failed to load image'))
-          return
+  console.log('addImageToCanvas called with URL:', imageUrl)
+  console.log('Canvas dimensions:', { width: canvas.width, height: canvas.height })
+  
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log('Loading image using native Image API...')
+      
+      // Use native Image API first
+      const nativeImg = new window.Image()
+      nativeImg.crossOrigin = 'anonymous'
+      
+      // Load the image using native API
+      await new Promise((imgResolve, imgReject) => {
+        nativeImg.onload = () => {
+          console.log('Native image loaded successfully:', {
+            width: nativeImg.width,
+            height: nativeImg.height,
+            naturalWidth: nativeImg.naturalWidth,
+            naturalHeight: nativeImg.naturalHeight
+          })
+          imgResolve(nativeImg)
         }
+        
+        nativeImg.onerror = (error) => {
+          console.error('Native image loading error:', error)
+          imgReject(new Error('Failed to load image with native API'))
+        }
+        
+        nativeImg.src = imageUrl
+      })
+      
+      console.log('Converting native image to fabric.js Image...')
+      
+      // Convert to fabric.js Image
+      const fabricImg = new Image(nativeImg, {
+        crossOrigin: 'anonymous',
+        ...options
+      })
+      
+      console.log('Fabric image created:', {
+        width: fabricImg.width,
+        height: fabricImg.height
+      })
 
-        // Scale image to fit canvas
-        const scale = Math.min(
-          canvas.width! / img.width!,
-          canvas.height! / img.height!
-        )
+      // Scale image to fit canvas while maintaining aspect ratio (show full image)
+      const scale = Math.min(
+        canvas.width! / fabricImg.width!,
+        canvas.height! / fabricImg.height!
+      )
 
-        img.set({
-          scaleX: scale,
-          scaleY: scale,
-          selectable: false,
-          evented: false,
-          ...options
-        })
+      console.log('Calculated scale:', scale)
 
-        canvas.add(img)
-        canvas.sendToBack(img)
-        canvas.renderAll()
-        resolve(img)
-      },
-      { crossOrigin: 'anonymous' }
-    )
+      // Center the image in the canvas
+      const scaledWidth = fabricImg.width! * scale
+      const scaledHeight = fabricImg.height! * scale
+      const left = (canvas.width! - scaledWidth) / 2
+      const top = (canvas.height! - scaledHeight) / 2
+
+      fabricImg.set({
+        scaleX: scale,
+        scaleY: scale,
+        left: left,
+        top: top,
+        selectable: false,
+        evented: false,
+        ...options
+      })
+
+      console.log('Adding image to canvas...', {
+        originalSize: { width: fabricImg.width, height: fabricImg.height },
+        scaledSize: { width: scaledWidth, height: scaledHeight },
+        position: { left, top },
+        scale
+      })
+      
+      canvas.add(fabricImg)
+      canvas.renderAll()
+      console.log('Image added to canvas successfully')
+      resolve(fabricImg)
+      
+    } catch (error) {
+      console.error('Error in addImageToCanvas:', error)
+      reject(error)
+    }
   })
 }
 
@@ -92,9 +146,28 @@ export function createPolygon(
     ...options
   })
 
+  console.log('createPolygon adding polygon to canvas:', {
+    polygon,
+    points: polygon.points,
+    visible: polygon.visible,
+    opacity: polygon.opacity,
+    fill: polygon.fill,
+    stroke: polygon.stroke,
+    canvasObjects: canvas.getObjects().length,
+    canvasDimensions: { width: canvas.width, height: canvas.height }
+  })
+
   canvas.add(polygon)
   canvas.setActiveObject(polygon)
   canvas.renderAll()
+
+  console.log('createPolygon polygon added successfully:', {
+    canvasObjects: canvas.getObjects().length,
+    polygonVisible: polygon.visible,
+    polygonOpacity: polygon.opacity,
+    polygonPosition: { left: polygon.left, top: polygon.top },
+    polygonSize: { width: polygon.width, height: polygon.height }
+  })
 
   return polygon
 }
@@ -162,12 +235,26 @@ export function setPolygonFromNormalized(
   normalizedPoints: number[][],
   imageWidth: number,
   imageHeight: number,
+  imageLeft: number = 0,
+  imageTop: number = 0,
   options?: Partial<IPolygonOptions>
 ): Polygon {
   const points: PolygonPoint[] = normalizedPoints.map(([x, y]) => ({
-    x: x * imageWidth,
-    y: y * imageHeight
+    x: imageLeft + (x * imageWidth),
+    y: imageTop + (y * imageHeight)
   }))
+
+  console.log('setPolygonFromNormalized creating polygon with points:', {
+    normalizedPoints: normalizedPoints.slice(0, 3),
+    imageWidth,
+    imageHeight,
+    imageLeft,
+    imageTop,
+    calculatedPoints: points.slice(0, 3),
+    totalPoints: points.length,
+    canvasBounds: { width: canvas.width, height: canvas.height },
+    pointsInBounds: points.every(p => p.x >= 0 && p.x <= canvas.width! && p.y >= 0 && p.y <= canvas.height!)
+  })
 
   return createPolygon(canvas, points, options)
 }

@@ -4,18 +4,14 @@
  */
 
 import React, { useRef, useEffect, useState, useCallback } from 'react'
-import { Canvas, Image, Polygon, Group, IEvent } from 'fabric'
+import { Canvas, Image, Polygon, IEvent } from 'fabric'
 import {
   createCanvas,
   addImageToCanvas,
   createPolygon,
   updatePolygonPoints,
-  addPointToPolygon,
-  removePointFromPolygon,
   getNormalizedPolygonPoints,
   setPolygonFromNormalized,
-  drawLandmarks,
-  clearCanvas,
   enablePolygonEditing,
   expandEyebrowRegion,
   PolygonPoint
@@ -23,7 +19,7 @@ import {
 
 interface SegmentationEditorProps {
   imagePath: string
-  initialPolygon?: number[][]
+  initialPolygon?: number[][][] | number[][]
   landmarks?: number[][]
   eyebrowExpandMod?: number
   onPolygonChange?: (polygon: number[][]) => void
@@ -31,6 +27,12 @@ interface SegmentationEditorProps {
   readOnly?: boolean
   width?: number
   height?: number
+  showSegmentation?: boolean
+  showLandmarks?: boolean
+  opacity?: number
+  brushSize?: number
+  selectedTool?: 'select' | 'draw' | 'erase' | 'pan' | 'zoom'
+  showGrid?: boolean
 }
 
 export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
@@ -42,34 +44,94 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
   onSave,
   readOnly = false,
   width = 800,
-  height = 600
+  height = 600,
+  showSegmentation = true,
+  showLandmarks = true,
+  opacity = 1,
+  brushSize = 5,
+  selectedTool = 'select',
+  showGrid = false
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fabricCanvasRef = useRef<Canvas | null>(null)
   const polygonRef = useRef<Polygon | null>(null)
   const imageRef = useRef<Image | null>(null)
-  const landmarkGroupRef = useRef<Group | null>(null)
 
-  const [isDrawing, setIsDrawing] = useState(false)
   const [drawPoints, setDrawPoints] = useState<PolygonPoint[]>([])
-  const [tool, setTool] = useState<'select' | 'draw' | 'add' | 'remove'>('select')
-  const [showLandmarks, setShowLandmarks] = useState(false)
+  const [tool, setTool] = useState<'select' | 'draw' | 'add' | 'remove' | 'pan' | 'zoom'>(selectedTool || 'select')
+  const [isPanning, setIsPanning] = useState(false)
+  const [lastPanPoint, setLastPanPoint] = useState<{ x: number; y: number } | null>(null)
   
   // Eyebrow region visualization
   const [showEyebrowPreview, setShowEyebrowPreview] = useState(false)
   const [currentEyebrowExpandMod, setCurrentEyebrowExpandMod] = useState(eyebrowExpandMod)
-  
-  // Tool palette state
-  const [showGrid, setShowGrid] = useState(false)
-  const [snapToGrid, setSnapToGrid] = useState(false)
-  const [gridSize, setGridSize] = useState(20)
-  const [zoomLevel, setZoomLevel] = useState(1)
-  const [isPanning, setIsPanning] = useState(false)
+
+  // Load image onto canvas
+  const loadImage = useCallback(async () => {
+    if (!fabricCanvasRef.current) return
+
+    console.log('SegmentationEditor loading image:', imagePath)
+    
+    // Test if the image URL is accessible
+    try {
+      const response = await fetch(imagePath, { method: 'HEAD' })
+      console.log('Image URL accessibility test:', {
+        url: imagePath,
+        status: response.status,
+        ok: response.ok
+      })
+    } catch (error) {
+      console.error('Image URL accessibility test failed:', error)
+    }
+    
+    try {
+      console.log('SegmentationEditor calling addImageToCanvas...')
+      const img = await addImageToCanvas(fabricCanvasRef.current, imagePath, {
+        crossOrigin: 'anonymous'
+      })
+      console.log('SegmentationEditor image loaded successfully:', img)
+      imageRef.current = img
+
+      // Load initial polygon if provided
+      console.log('SegmentationEditor polygon loading check:', {
+        hasInitialPolygon: !!initialPolygon,
+        polygonLength: initialPolygon?.length,
+        showSegmentation,
+        polygonData: initialPolygon
+      })
+      
+      // Note: Segmentation overlays are now handled by SVG overlays in the JSX
+      // This matches the approach used in OptimizedFaceGrid.tsx
+      console.log('SegmentationEditor - segmentation data available:', {
+        hasInitialPolygon: !!initialPolygon,
+        polygonLength: initialPolygon?.length,
+        showSegmentation,
+        polygonData: initialPolygon
+      })
+
+      // Note: Landmarks are now handled by SVG overlays in the JSX
+      // This matches the approach used in OptimizedFaceGrid.tsx
+    } catch (error) {
+      console.error('Failed to load image:', error)
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        imagePath,
+        canvasExists: !!fabricCanvasRef.current,
+        canvasDimensions: fabricCanvasRef.current ? {
+          width: fabricCanvasRef.current.width,
+          height: fabricCanvasRef.current.height
+        } : null
+      })
+    }
+  }, [imagePath, initialPolygon, landmarks, readOnly])
 
   // Initialize fabric canvas
   useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return
 
+    console.log('SegmentationEditor initializing canvas with dimensions:', { width, height })
+    
     const canvas = createCanvas(canvasRef.current, {
       width,
       height,
@@ -77,11 +139,7 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
     })
 
     fabricCanvasRef.current = canvas
-
-    // Load image
-    if (imagePath) {
-      loadImage()
-    }
+    console.log('SegmentationEditor canvas created:', canvas)
 
     return () => {
       canvas.dispose()
@@ -89,69 +147,122 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
     }
   }, [])
 
-  // Load image onto canvas
-  const loadImage = useCallback(async () => {
-    if (!fabricCanvasRef.current) return
-
-    try {
-      const img = await addImageToCanvas(fabricCanvasRef.current, imagePath, {
-        crossOrigin: 'anonymous'
+  // Load image when imagePath changes
+  useEffect(() => {
+    if (imagePath && fabricCanvasRef.current) {
+      console.log('SegmentationEditor loadImage effect triggered, canvas dimensions:', {
+        width: fabricCanvasRef.current.width,
+        height: fabricCanvasRef.current.height
       })
-      imageRef.current = img
-
-      // Load initial polygon if provided
-      if (initialPolygon && initialPolygon.length > 0) {
-        const imageWidth = img.width! * img.scaleX!
-        const imageHeight = img.height! * img.scaleY!
-
-        const polygon = setPolygonFromNormalized(
-          fabricCanvasRef.current,
-          initialPolygon,
-          imageWidth,
-          imageHeight,
-          { selectable: !readOnly, evented: !readOnly }
-        )
-
-        polygonRef.current = polygon
-
-        if (!readOnly) {
-          enablePolygonEditing(polygon)
-        }
-
-        // Listen for polygon modifications
-        polygon.on('modified', () => {
-          handlePolygonModified()
-        })
-      }
-
-      // Draw landmarks if provided
-      if (landmarks && landmarks.length > 0) {
-        drawLandmarksOnCanvas()
-      }
-    } catch (error) {
-      console.error('Failed to load image:', error)
+      loadImage()
     }
-  }, [imagePath, initialPolygon, landmarks, readOnly])
+  }, [imagePath, loadImage])
 
-  // Draw landmarks on canvas
-  const drawLandmarksOnCanvas = useCallback(() => {
-    if (!fabricCanvasRef.current || !imageRef.current || !landmarks) return
+  // Render segmentation polygons on fabric.js canvas
+  const renderSegmentationPolygons = useCallback(() => {
+    if (!fabricCanvasRef.current || !imageRef.current || !initialPolygon || !showSegmentation) {
+      console.log('Segmentation rendering skipped:', {
+        hasCanvas: !!fabricCanvasRef.current,
+        hasImage: !!imageRef.current,
+        hasPolygon: !!initialPolygon,
+        showSegmentation
+      })
+      return
+    }
 
+    console.log('Rendering segmentation polygons on fabric.js canvas:', {
+      polygonCount: Array.isArray(initialPolygon) ? initialPolygon.length : 1
+    })
+
+    // Remove existing segmentation polygons
+    const existingPolygons = fabricCanvasRef.current.getObjects().filter(obj => 
+      (obj as any).isSegmentationPolygon
+    )
+    existingPolygons.forEach(poly => fabricCanvasRef.current!.remove(poly))
+
+    if (!Array.isArray(initialPolygon) || initialPolygon.length === 0) return
+
+    // Get image dimensions and position
     const imageWidth = imageRef.current.width! * imageRef.current.scaleX!
     const imageHeight = imageRef.current.height! * imageRef.current.scaleY!
+    const imageLeft = imageRef.current.left!
+    const imageTop = imageRef.current.top!
+    const scale = imageWidth / 640 // Convert from 640x640 to actual image size
 
-    if (landmarkGroupRef.current) {
-      fabricCanvasRef.current.remove(landmarkGroupRef.current)
-    }
+    console.log('Creating segmentation polygons with:', {
+      imageWidth,
+      imageHeight,
+      imageLeft,
+      imageTop,
+      scale,
+      polygonCount: initialPolygon.length
+    })
 
-    if (showLandmarks) {
-      const group = drawLandmarks(fabricCanvasRef.current, landmarks, imageWidth, imageHeight, {
-        color: '#FF5722',
-        radius: 2
+    // Render each polygon
+    initialPolygon.forEach((polygon, polygonIndex) => {
+      if (!polygon || polygon.length === 0) return
+
+      let points: { x: number; y: number }[]
+
+      if (Array.isArray(polygon[0])) {
+        // Standard format: [[x, y], [x, y], ...]
+        points = (polygon as number[][]).map(point => ({
+          x: imageLeft + (point[0] * scale),
+          y: imageTop + (point[1] * scale)
+        }))
+      } else {
+        // Flat format: [x, y, x, y, ...]
+        points = []
+        for (let i = 0; i < polygon.length; i += 2) {
+          points.push({
+            x: imageLeft + ((polygon as number[])[i] * scale),
+            y: imageTop + ((polygon as number[])[i + 1] * scale)
+          })
+        }
+      }
+
+      if (points.length < 3) return // Need at least 3 points for a polygon
+
+      const fabricPolygon = new Polygon(points, {
+        fill: 'rgba(0, 255, 0, 0.2)',
+        stroke: '#00ff00',
+        strokeWidth: 2,
+        opacity: opacity,
+        selectable: false,
+        evented: false,
+        hoverCursor: 'default',
+        moveCursor: 'default'
       })
-      landmarkGroupRef.current = group
-    }
-  }, [landmarks, showLandmarks])
+
+      ;(fabricPolygon as any).isSegmentationPolygon = true
+
+      console.log(`Added segmentation polygon ${polygonIndex}:`, {
+        pointsCount: points.length,
+        firstPoint: points[0],
+        lastPoint: points[points.length - 1]
+      })
+
+      fabricCanvasRef.current!.add(fabricPolygon)
+    })
+
+    fabricCanvasRef.current!.renderAll()
+  }, [initialPolygon, showSegmentation, opacity])
+
+  // Trigger polygon rendering when data changes or after a delay to ensure image is loaded
+  useEffect(() => {
+    renderSegmentationPolygons()
+  }, [renderSegmentationPolygons])
+
+  // Also try to render after a delay to catch image loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      renderSegmentationPolygons()
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Note: Landmarks are now handled by SVG overlays in the JSX
+  // No need for fabric.js landmark drawing
 
   // Handle polygon modification
   const handlePolygonModified = useCallback(() => {
@@ -171,12 +282,14 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
     }
   }, [onPolygonChange])
 
-  // Handle canvas click for drawing mode
+  // Handle canvas interactions
   const handleCanvasClick = useCallback((event: IEvent) => {
-    if (tool !== 'draw' || !fabricCanvasRef.current || readOnly) return
+    if (!fabricCanvasRef.current || readOnly) return
 
     const pointer = fabricCanvasRef.current.getPointer(event.e)
-    const newPoint: PolygonPoint = { x: pointer.x, y: pointer.y }
+
+    if (tool === 'draw') {
+      const newPoint: PolygonPoint = { x: pointer.x, y: pointer.y }
 
     setDrawPoints(prev => {
       const updated = [...prev, newPoint]
@@ -197,6 +310,10 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
 
       return updated
     })
+    } else if (tool === 'pan') {
+      setIsPanning(true)
+      setLastPanPoint({ x: pointer.x, y: pointer.y })
+    }
   }, [tool, readOnly])
 
   // Complete drawing
@@ -217,6 +334,41 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
     setTool('select')
     handlePolygonModified()
   }, [drawPoints, handlePolygonModified])
+
+  // Handle mouse move for panning
+  const handleMouseMove = useCallback((event: IEvent) => {
+    if (!fabricCanvasRef.current || !isPanning || !lastPanPoint) return
+
+    const pointer = fabricCanvasRef.current.getPointer(event.e)
+    const deltaX = pointer.x - lastPanPoint.x
+    const deltaY = pointer.y - lastPanPoint.y
+
+    fabricCanvasRef.current.viewportTransform![4] += deltaX
+    fabricCanvasRef.current.viewportTransform![5] += deltaY
+    fabricCanvasRef.current.requestRenderAll()
+
+    setLastPanPoint({ x: pointer.x, y: pointer.y })
+  }, [isPanning, lastPanPoint])
+
+  // Handle mouse up
+  const handleMouseUp = useCallback(() => {
+    if (isPanning) {
+      setIsPanning(false)
+      setLastPanPoint(null)
+    }
+  }, [isPanning])
+
+  // Handle zoom
+  const handleZoom = useCallback((delta: number) => {
+    if (!fabricCanvasRef.current) return
+
+    const canvas = fabricCanvasRef.current
+    const zoom = canvas.getZoom()
+    const newZoom = Math.max(0.1, Math.min(5, zoom + delta))
+    
+    canvas.setZoom(newZoom)
+    canvas.requestRenderAll()
+  }, [])
 
   // Apply eyebrow expansion
   const applyEyebrowExpansion = useCallback(() => {
@@ -347,167 +499,186 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
     const canvas = fabricCanvasRef.current
 
     canvas.on('mouse:down', handleCanvasClick)
+    canvas.on('mouse:move', handleMouseMove)
+    canvas.on('mouse:up', handleMouseUp)
 
     return () => {
       canvas.off('mouse:down', handleCanvasClick)
+      canvas.off('mouse:move', handleMouseMove)
+      canvas.off('mouse:up', handleMouseUp)
     }
-  }, [handleCanvasClick])
+  }, [handleCanvasClick, handleMouseMove, handleMouseUp])
 
-  // Update landmarks visibility
+  // Note: Landmarks visibility is now handled by SVG overlays in the JSX
+
+  // Update tool when selectedTool prop changes
   useEffect(() => {
-    drawLandmarksOnCanvas()
-  }, [showLandmarks, drawLandmarksOnCanvas])
+    if (selectedTool) {
+      setTool(selectedTool)
+    }
+  }, [selectedTool])
+
+  // Handle keyboard shortcuts for zoom
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === '=' || event.key === '+') {
+          event.preventDefault()
+          handleZoom(0.1)
+        } else if (event.key === '-') {
+          event.preventDefault()
+          handleZoom(-0.1)
+        } else if (event.key === '0') {
+          event.preventDefault()
+          if (fabricCanvasRef.current) {
+            fabricCanvasRef.current.setZoom(1)
+            fabricCanvasRef.current.requestRenderAll()
+          }
+        }
+      }
+    }
+
+    globalThis.addEventListener('keydown', handleKeyDown)
+    return () => globalThis.removeEventListener('keydown', handleKeyDown)
+  }, [handleZoom])
+
+  // Update polygon visibility when showSegmentation changes
+  useEffect(() => {
+    if (polygonRef.current) {
+      polygonRef.current.set({ visible: showSegmentation, opacity: opacity })
+      fabricCanvasRef.current?.renderAll()
+    }
+  }, [showSegmentation, opacity])
+
+  // Update brush size when it changes
+  useEffect(() => {
+    if (polygonRef.current) {
+      polygonRef.current.set({ strokeWidth: brushSize })
+      fabricCanvasRef.current?.renderAll()
+    }
+  }, [brushSize])
 
   return (
     <div className="segmentation-editor">
-      <div className="editor-toolbar bg-gray-800 p-2 flex gap-2 items-center">
-        <button
-          className={`px-3 py-1 rounded ${tool === 'select' ? 'bg-blue-600' : 'bg-gray-700'}`}
-          onClick={() => setTool('select')}
-          disabled={readOnly}
-        >
-          Select
-        </button>
-        <button
-          className={`px-3 py-1 rounded ${tool === 'draw' ? 'bg-blue-600' : 'bg-gray-700'}`}
-          onClick={() => setTool('draw')}
-          disabled={readOnly}
-        >
-          Draw
-        </button>
-        {tool === 'draw' && drawPoints.length >= 3 && (
-          <button
-            className="px-3 py-1 rounded bg-green-600"
-            onClick={completeDrawing}
-          >
-            Complete
-          </button>
-        )}
-        <div className="border-l border-gray-600 h-6 mx-2" />
-        <button
-          className="px-3 py-1 rounded bg-gray-700"
-          onClick={resetPolygon}
-          disabled={readOnly || !initialPolygon}
-        >
-          Reset
-        </button>
-        <button
-          className="px-3 py-1 rounded bg-purple-600"
-          onClick={applyEyebrowExpansion}
-          disabled={readOnly || eyebrowExpandMod <= 1}
-        >
-          Apply Eyebrow Expansion ({eyebrowExpandMod}x)
-        </button>
-        
-        {/* Eyebrow Preview Controls */}
-        <div className="flex items-center gap-2">
-          <button
-            className={`px-3 py-1 rounded ${showEyebrowPreview ? 'bg-yellow-600' : 'bg-gray-700'}`}
-            onClick={toggleEyebrowPreview}
-            disabled={!landmarks || landmarks.length < 68}
-          >
-            {showEyebrowPreview ? 'Hide' : 'Show'} Eyebrow Preview
-          </button>
-          {showEyebrowPreview && (
-            <div className="flex items-center gap-2">
-              <label className="text-white text-sm">Expand:</label>
-              <input
-                type="range"
-                min="1"
-                max="4"
-                step="0.1"
-                value={currentEyebrowExpandMod}
-                onChange={(e) => handleEyebrowExpand(Number(e.target.value))}
-                className="w-20"
-              />
-              <span className="text-white text-sm">{currentEyebrowExpandMod.toFixed(1)}x</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="border-l border-gray-600 h-6 mx-2" />
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={showLandmarks}
-            onChange={(e) => setShowLandmarks(e.target.checked)}
-          />
-          <span className="text-sm">Show Landmarks</span>
-        </label>
-        
-        {/* Tool Palette Controls */}
-        <div className="border-l border-gray-600 h-6 mx-2" />
-        <div className="flex items-center gap-2">
-          <button
-            className={`px-3 py-1 rounded ${isPanning ? 'bg-blue-600' : 'bg-gray-700'}`}
-            onClick={() => setIsPanning(!isPanning)}
-          >
-            Pan
-          </button>
-          <div className="flex items-center gap-2">
-            <label className="text-white text-sm">Zoom:</label>
-            <input
-              type="range"
-              min="0.1"
-              max="3"
-              step="0.1"
-              value={zoomLevel}
-              onChange={(e) => setZoomLevel(Number(e.target.value))}
-              className="w-20"
-            />
-            <span className="text-white text-sm">{Math.round(zoomLevel * 100)}%</span>
-          </div>
-        </div>
-        
-        <div className="border-l border-gray-600 h-6 mx-2" />
-        <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={showGrid}
-              onChange={(e) => setShowGrid(e.target.checked)}
-            />
-            <span className="text-white text-sm">Grid</span>
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={snapToGrid}
-              onChange={(e) => setSnapToGrid(e.target.checked)}
-              disabled={!showGrid}
-            />
-            <span className="text-white text-sm">Snap</span>
-          </label>
-          {showGrid && (
-            <div className="flex items-center gap-2">
-              <label className="text-white text-sm">Size:</label>
-              <input
-                type="range"
-                min="10"
-                max="50"
-                step="5"
-                value={gridSize}
-                onChange={(e) => setGridSize(Number(e.target.value))}
-                className="w-16"
-              />
-              <span className="text-white text-sm">{gridSize}px</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="ml-auto flex gap-2">
-          <button
-            className="px-4 py-1 rounded bg-blue-600 hover:bg-blue-700"
-            onClick={handleSave}
-            disabled={readOnly}
-          >
-            Save
-          </button>
-        </div>
-      </div>
 
-      <div className="canvas-container bg-gray-900 flex items-center justify-center" style={{ height: height + 40 }}>
-        <canvas ref={canvasRef} />
+      <div className="canvas-container bg-gray-900 flex items-center justify-center relative" style={{ height: height + 40 }}>
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            border: '1px solid #444',
+            maxWidth: '100%',
+            maxHeight: '100%'
+          }}
+        />
+        
+        {/* SVG Overlays for Landmarks Only - Segmentation is now rendered on fabric.js canvas */}
+
+        {/* Landmarks Overlay */}
+        {(() => {
+          console.log('Landmarks overlay render check:', {
+            showLandmarks,
+            hasLandmarks: !!landmarks,
+            landmarksLength: landmarks?.length,
+            hasImageRef: !!imageRef.current
+          })
+          return showLandmarks && landmarks && landmarks.length > 0
+        })() && (
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            style={{ 
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 10
+            }}
+          >
+            {landmarks.map((landmark, index) => {
+              console.log(`Rendering landmark ${index}:`, {
+                landmark,
+                x: landmark[0],
+                y: landmark[1]
+              })
+              
+              // Use the same simple scaling as OptimizedFaceGrid.tsx
+              // For DeepFaceLab aligned images, landmarks are in a 640x640 coordinate system
+              // Map them to 0-100 SVG coordinates
+              const imageSize = 640
+              const scale = 100 / imageSize
+              
+              return (
+                <circle
+                  key={index}
+                  cx={landmark[0] * scale}
+                  cy={landmark[1] * scale}
+                  r="0.6"
+                  fill="#ff0000"
+                  opacity={opacity}
+                />
+              )
+            })}
+            
+            {/* Connect landmarks with lines for facial features */}
+            {landmarks.length >= 5 && (() => {
+              // Use the same simple scaling as OptimizedFaceGrid.tsx
+              const imageSize = 640
+              const scale = 100 / imageSize
+              
+              const convertToSVG = (landmark: number[]) => ({
+                x: landmark[0] * scale,
+                y: landmark[1] * scale
+              })
+              
+              return (
+                <>
+                  {/* Left eye */}
+                  <line
+                    x1={convertToSVG(landmarks[36]).x}
+                    y1={convertToSVG(landmarks[36]).y}
+                    x2={convertToSVG(landmarks[39]).x}
+                    y2={convertToSVG(landmarks[39]).y}
+                    stroke="#ff0000"
+                    strokeWidth="0.2"
+                    opacity={opacity * 0.7}
+                  />
+                  {/* Right eye */}
+                  <line
+                    x1={convertToSVG(landmarks[42]).x}
+                    y1={convertToSVG(landmarks[42]).y}
+                    x2={convertToSVG(landmarks[45]).x}
+                    y2={convertToSVG(landmarks[45]).y}
+                    stroke="#ff0000"
+                    strokeWidth="0.2"
+                    opacity={opacity * 0.7}
+                  />
+                  {/* Nose bridge */}
+                  <line
+                    x1={convertToSVG(landmarks[27]).x}
+                    y1={convertToSVG(landmarks[27]).y}
+                    x2={convertToSVG(landmarks[30]).x}
+                    y2={convertToSVG(landmarks[30]).y}
+                    stroke="#ff0000"
+                    strokeWidth="0.2"
+                    opacity={opacity * 0.7}
+                  />
+                  {/* Mouth */}
+                  <line
+                    x1={convertToSVG(landmarks[48]).x}
+                    y1={convertToSVG(landmarks[48]).y}
+                    x2={convertToSVG(landmarks[54]).x}
+                    y2={convertToSVG(landmarks[54]).y}
+                    stroke="#ff0000"
+                    strokeWidth="0.2"
+                    opacity={opacity * 0.7}
+                  />
+                </>
+              )
+            })()}
+          </svg>
+        )}
       </div>
 
       {tool === 'draw' && (

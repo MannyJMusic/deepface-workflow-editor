@@ -177,6 +177,19 @@ const FaceEditorModal: React.FC<FaceEditorModalProps> = ({
     loadFaceData()
   }, [loadFaceData])
 
+  // Generate image URL using API endpoint
+  const getImageUrl = useCallback((filename: string) => {
+    const baseUrl = 'http://localhost:8001/api'
+    const url = `${baseUrl}/nodes/${nodeId}/face-image/${encodeURIComponent(filename)}?input_dir=${encodeURIComponent(inputDir)}`
+    console.log('FaceEditorModal generating image URL:', {
+      filename,
+      nodeId,
+      inputDir,
+      url
+    })
+    return url
+  }, [nodeId, inputDir])
+
   // Helper function to rotate points around center
   const rotatePoints = useCallback((points: number[][], angle: number) => {
     const radians = (angle * Math.PI) / 180
@@ -276,8 +289,8 @@ const FaceEditorModal: React.FC<FaceEditorModalProps> = ({
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    globalThis.addEventListener('keydown', handleKeyDown)
+    return () => globalThis.removeEventListener('keydown', handleKeyDown)
   }, [handlePrevious, handleNext, onClose, handleSave, handleReset, handleResetAlignment, handleAlignToEyes, handleAlignToCenter, viewMode, currentPolygon, currentLandmarks])
 
   if (!faceImage) {
@@ -393,7 +406,7 @@ const FaceEditorModal: React.FC<FaceEditorModalProps> = ({
           {viewMode === 'segmentation' && (
             <div className="flex-1">
               <SegmentationEditor
-                imagePath={faceImage.filePath}
+                imagePath={getImageUrl(faceImage.filename)}
                 initialPolygon={currentPolygon}
                 landmarks={currentLandmarks}
                 eyebrowExpandMod={eyebrowExpandMod}
@@ -409,7 +422,7 @@ const FaceEditorModal: React.FC<FaceEditorModalProps> = ({
               {viewMode === 'landmarks' && (
                 <div className="flex-1">
                   <LandmarkEditor
-                    imagePath={faceImage.filePath}
+                    imagePath={getImageUrl(faceImage.filename)}
                     landmarks={currentLandmarks}
                     onLandmarksChange={setCurrentLandmarks}
                     width={1000}

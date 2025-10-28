@@ -14,6 +14,18 @@ interface LandmarkEditorProps {
   width?: number
   height?: number
   showIndices?: boolean
+  showLandmarks?: boolean
+  selectedRegions?: {
+    all: boolean
+    outer: boolean
+    leftEyebrow: boolean
+    leftEye: boolean
+    rightEyebrow: boolean
+    rightEye: boolean
+    nose: boolean
+    mouth: boolean
+  }
+  opacity?: number
 }
 
 const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
@@ -22,7 +34,19 @@ const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   onLandmarksChange,
   width = 800,
   height = 600,
-  showIndices = false
+  showIndices = false,
+  showLandmarks = true,
+  selectedRegions = {
+    all: true,
+    outer: true,
+    leftEyebrow: true,
+    leftEye: true,
+    rightEyebrow: true,
+    rightEye: true,
+    nose: true,
+    mouth: true
+  },
+  opacity = 1
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [landmarks, setLandmarks] = useState<Landmark[]>([])
@@ -31,9 +55,35 @@ const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
-  const [canvasSize, setCanvasSize] = useState({ width, height })
+  const [canvasSize] = useState({ width, height })
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
+
+  // Check if landmark is in selected region (68-point landmark model)
+  const isLandmarkInSelectedRegion = useCallback((index: number) => {
+    if (selectedRegions.all) return true
+    
+    // 68-point landmark regions
+    const regions = {
+      outer: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], // Jaw line
+      leftEyebrow: [17, 18, 19, 20, 21], // Left eyebrow
+      rightEyebrow: [22, 23, 24, 25, 26], // Right eyebrow
+      nose: [27, 28, 29, 30, 31, 32, 33, 34, 35], // Nose
+      leftEye: [36, 37, 38, 39, 40, 41], // Left eye
+      rightEye: [42, 43, 44, 45, 46, 47], // Right eye
+      mouth: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67] // Mouth
+    }
+    
+    if (selectedRegions.outer && regions.outer.includes(index)) return true
+    if (selectedRegions.leftEyebrow && regions.leftEyebrow.includes(index)) return true
+    if (selectedRegions.rightEyebrow && regions.rightEyebrow.includes(index)) return true
+    if (selectedRegions.nose && regions.nose.includes(index)) return true
+    if (selectedRegions.leftEye && regions.leftEye.includes(index)) return true
+    if (selectedRegions.rightEye && regions.rightEye.includes(index)) return true
+    if (selectedRegions.mouth && regions.mouth.includes(index)) return true
+    
+    return false
+  }, [selectedRegions])
 
   // Initialize landmarks from props
   useEffect(() => {
@@ -97,31 +147,38 @@ const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
     img.onload = () => {
       ctx.drawImage(img, offset.x, offset.y, imageSize.width * scale, imageSize.height * scale)
       
-      // Draw landmarks
-      landmarks.forEach((landmark) => {
-        const x = offset.x + landmark.x * scale
-        const y = offset.y + landmark.y * scale
-        
-        // Draw landmark circle
-        ctx.beginPath()
-        ctx.arc(x, y, 6, 0, 2 * Math.PI)
-        ctx.fillStyle = selectedLandmark === landmark.id ? '#ff6b6b' : '#4ecdc4'
-        ctx.fill()
-        ctx.strokeStyle = '#ffffff'
-        ctx.lineWidth = 2
-        ctx.stroke()
-        
-        // Draw index if enabled
-        if (showIndices) {
-          ctx.fillStyle = '#ffffff'
-          ctx.font = '12px Arial'
-          ctx.textAlign = 'center'
-          ctx.fillText(landmark.index.toString(), x, y - 10)
+      // Draw landmarks if enabled
+      if (showLandmarks) {
+        for (const landmark of landmarks) {
+          // Filter landmarks based on selected regions
+          if (!isLandmarkInSelectedRegion(landmark.index)) return
+          
+          const x = offset.x + landmark.x * scale
+          const y = offset.y + landmark.y * scale
+          
+          // Draw landmark circle
+          ctx.beginPath()
+          ctx.arc(x, y, 6, 0, 2 * Math.PI)
+          ctx.fillStyle = selectedLandmark === landmark.id ? '#ff6b6b' : '#4ecdc4'
+          ctx.globalAlpha = opacity
+          ctx.fill()
+          ctx.strokeStyle = '#ffffff'
+          ctx.lineWidth = 2
+          ctx.stroke()
+          ctx.globalAlpha = 1
+          
+          // Draw index if enabled
+          if (showIndices) {
+            ctx.fillStyle = '#ffffff'
+            ctx.font = '12px Arial'
+            ctx.textAlign = 'center'
+            ctx.fillText(landmark.index.toString(), x, y - 10)
+          }
         }
-      })
+      }
     }
     img.src = imagePath
-  }, [imageLoaded, landmarks, selectedLandmark, scale, offset, imageSize, showIndices, imagePath])
+  }, [imageLoaded, landmarks, selectedLandmark, scale, offset, imageSize, showIndices, imagePath, showLandmarks, selectedRegions, opacity, isLandmarkInSelectedRegion])
 
   // Redraw when landmarks change
   useEffect(() => {
@@ -249,8 +306,8 @@ const LandmarkEditor: React.FC<LandmarkEditorProps> = ({
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    globalThis.addEventListener('keydown', handleKeyDown)
+    return () => globalThis.removeEventListener('keydown', handleKeyDown)
   }, [selectedLandmark, landmarks, onLandmarksChange])
 
   // Clear all landmarks

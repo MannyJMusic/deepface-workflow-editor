@@ -4,7 +4,7 @@ import { apiClient } from '../../services/api'
 import OptimizedFaceGrid from './OptimizedFaceGrid'
 import DetectionPanelNew from './DetectionPanelNew'
 import ConsolePanel, { ProcessInfo, LogEntry } from './ConsolePanel'
-import FaceEditorModal from './FaceEditorModal'
+import FaceEditorModalNew from './FaceEditorModalNew'
 import FileTreePanel from './FileTreePanel'
 
 interface FaceImage {
@@ -221,14 +221,41 @@ const AdvancedFaceEditorView: React.FC = () => {
             }
             
             if (data.type === 'import_image_success' && data.node_id === currentNode.id) {
+              // Update progress for each successful image
+              if (data.current_image && data.processed !== undefined && data.total !== undefined) {
+                const progress = (data.processed / data.total) * 100
+                setImportProgress(progress)
+                setCurrentImage(data.current_image)
+                setProcessedCount(data.processed)
+                setTotalCount(data.total)
+                setImportMessage(`${data.processed} with data`)
+              }
               addConsoleLog(`✓ ${data.filename}: landmarks=${data.has_landmarks}, segmentation=${data.has_segmentation}`)
             }
             
             if (data.type === 'import_image_failed' && data.node_id === currentNode.id) {
+              // Update progress for failed images too
+              if (data.current_image && data.processed !== undefined && data.total !== undefined) {
+                const progress = (data.processed / data.total) * 100
+                setImportProgress(progress)
+                setCurrentImage(data.current_image)
+                setProcessedCount(data.processed)
+                setTotalCount(data.total)
+                setImportMessage(`${data.processed} with data`)
+              }
               addConsoleLog(`✗ ${data.filename}: ${data.reason}`)
             }
             
             if (data.type === 'import_image_error' && data.node_id === currentNode.id) {
+              // Update progress for error images too
+              if (data.current_image && data.processed !== undefined && data.total !== undefined) {
+                const progress = (data.processed / data.total) * 100
+                setImportProgress(progress)
+                setCurrentImage(data.current_image)
+                setProcessedCount(data.processed)
+                setTotalCount(data.total)
+                setImportMessage(`${data.processed} with data`)
+              }
               addConsoleLog(`✗ ${data.filename}: ${data.error}`)
             }
             
@@ -678,6 +705,7 @@ const AdvancedFaceEditorView: React.FC = () => {
     try {
       // Use the optimized batch import process
       const importResponse = await apiClient.importAllFaceData(currentNode.id, currentNode.parameters?.input_dir || '')
+      console.log('Import response:', importResponse)
       
       if (importResponse.success) {
         setImportProgress(100)
@@ -869,22 +897,7 @@ const AdvancedFaceEditorView: React.FC = () => {
               Advanced Face Editor
             </h2>
             
-            {/* Import Status Indicator */}
-            {isImporting && (
-              <div className="flex items-center space-x-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-md">
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-blue-700 dark:text-blue-300">
-                    {importMessage || 'Importing face data...'}
-                  </span>
-                  {currentImage && (
-                    <span className="text-xs text-blue-600 dark:text-blue-400">
-                      Processing: {currentImage}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
+         
             
             {/* Overlay Toggle Buttons */}
             <div className="flex items-center space-x-2">
@@ -950,33 +963,33 @@ const AdvancedFaceEditorView: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Progress Bar */}
-      {isImporting && (
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 transition-colors duration-300">
-          <div className="w-full">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {importMessage || 'Importing face data...'}
-              </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {processedCount}/{totalCount} ({Math.round(importProgress)}%)
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${importProgress}%` }}
-              ></div>
-            </div>
-            {currentImage && (
-              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">
-                Processing: {currentImage}
+   {/* Import Status Indicator */}
+   {isImporting && (
+              <div className="flex items-center space-x-3 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                      Importing Face Data
+                    </span>
+                    <span className="text-sm text-blue-600 dark:text-blue-400">
+                      {Math.round(importProgress || 0)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2 mb-2">
+                    <div
+                      className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${importProgress || 0}%` }}
+                    />
+                  </div>
+                  {currentImage && (
+                    <div className="text-xs text-blue-600 dark:text-blue-400">
+                      {currentImage}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
-          </div>
-        </div>
-      )}
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
@@ -1083,7 +1096,7 @@ const AdvancedFaceEditorView: React.FC = () => {
 
       {/* Face Editor Modal */}
       {selectedFaceId && currentNode && (
-        <FaceEditorModal
+        <FaceEditorModalNew
           faceImage={faceImages.find(f => f.id === selectedFaceId)}
           faceImages={faceImages}
           nodeId={currentNode.id}

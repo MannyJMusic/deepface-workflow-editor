@@ -386,26 +386,6 @@ const DetectionPanelNew: React.FC<DetectionPanelProps> = ({
                 />
               </div>
 
-              {/* Import Progress Bar */}
-              {isImporting && importProgress !== undefined && (
-                <div className="mt-3">
-                  <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                    <span>{importMessage || 'Importing face data...'}</span>
-                    <span>{Math.round(importProgress)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${importProgress}%` }}
-                    />
-                  </div>
-                  {processedCount !== undefined && totalCount !== undefined && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      Processed: {processedCount}/{totalCount} images
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Faces Folder Section */}

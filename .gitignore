@@ -12,3 +12,4 @@ node_modules
 .electron.log
 .electron.pid
 startup.log
+examples

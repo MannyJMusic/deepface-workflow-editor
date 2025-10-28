@@ -2225,6 +2225,18 @@ if __name__ == "__main__":
             
             await self.log_message("info", f"Found {total_images} face images, processing sequentially like machine editor...")
             
+            # Send initial progress update
+            initial_message = {
+                "type": "import_progress",
+                "node_id": self.node.id,
+                "progress": 0.0,
+                "current_image": f"Starting import of {total_images} images...",
+                "processed": 0,
+                "total": total_images,
+                "message": f"Starting import of {total_images} images..."
+            }
+            await websocket_manager.broadcast(json.dumps(initial_message))
+            
             # Use machine editor style sequential processing
             all_face_data = {}
             processed_count = 0
@@ -2246,18 +2258,56 @@ if __name__ == "__main__":
                             "source_filename": face_data.get("source_filename")
                         }
                         processed_count += 1
+                        
+                        # Send individual image success message
+                        image_message = {
+                            "type": "import_image_success",
+                            "node_id": self.node.id,
+                            "filename": face_id,
+                            "has_landmarks": bool(face_data.get('landmarks')),
+                            "has_segmentation": bool(face_data.get('segmentation')),
+                            "current_image": f"Processing {i + 1}/{total_images}",
+                            "processed": processed_count,
+                            "total": total_images
+                        }
+                        await websocket_manager.broadcast(json.dumps(image_message))
+                        
                         # Debug: log first few successful imports
                         if processed_count <= 3:
                             await self.log_message("info", f"Sample face data for {face_id}: landmarks={bool(face_data.get('landmarks'))}, segmentation={bool(face_data.get('segmentation'))}")
                     else:
+                        # Send individual image failed message
+                        image_message = {
+                            "type": "import_image_failed",
+                            "node_id": self.node.id,
+                            "filename": face_id,
+                            "reason": face_data.get('message', 'Unknown error'),
+                            "current_image": f"Processing {i + 1}/{total_images}",
+                            "processed": processed_count,
+                            "total": total_images
+                        }
+                        await websocket_manager.broadcast(json.dumps(image_message))
+                        
                         # Debug: log why face data failed
                         await self.log_message("warning", f"No face data for {face_id}: {face_data.get('message', 'Unknown error')}")
                 except Exception as e:
+                    # Send individual image error message
+                    image_message = {
+                        "type": "import_image_error",
+                        "node_id": self.node.id,
+                        "filename": face_id,
+                        "error": str(e),
+                        "current_image": f"Processing {i + 1}/{total_images}",
+                        "processed": processed_count,
+                        "total": total_images
+                    }
+                    await websocket_manager.broadcast(json.dumps(image_message))
+                    
                     await self.log_message("warning", f"Error processing {face_id}: {str(e)}")
                     continue
                 
-                # Send progress update every 10 images for better responsiveness
-                if (i + 1) % 10 == 0 or (i + 1) == total_images:
+                # Send progress update every 5 images for better responsiveness
+                if (i + 1) % 5 == 0 or (i + 1) == total_images:
                     progress = (i + 1) / total_images * 100
                     progress_message = {
                         "type": "import_progress",
@@ -2266,7 +2316,7 @@ if __name__ == "__main__":
                         "current_image": f"Processing {i + 1}/{total_images}",
                         "processed": processed_count,
                         "total": total_images,
-                        "message": f"Processed {i + 1}/{total_images} images ({processed_count} with data)"
+                        "message": f"{processed_count} with data"
                     }
                     print(f"DEBUG: Sending WebSocket progress update: {progress_message}")
                     await websocket_manager.broadcast(json.dumps(progress_message))

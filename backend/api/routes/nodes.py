@@ -807,19 +807,33 @@ async def get_face_image(node_id: str, filename: str, input_dir: str):
         from fastapi.responses import FileResponse
         from pathlib import Path
         
+        print(f"🖼️ Serving face image: {filename} from {input_dir}")
+        
         # Construct the full file path
         file_path = Path(input_dir) / filename
         
         # Check if file exists
         if not file_path.exists():
+            print(f"❌ Image file not found: {file_path}")
             raise HTTPException(status_code=404, detail="Image file not found")
         
-        # Return the image file
-        return FileResponse(
+        print(f"✅ Image file found: {file_path}")
+        
+        # Return the image file with CORS headers
+        from fastapi import Response
+        response = FileResponse(
             path=str(file_path),
             media_type="image/jpeg",
             filename=filename
         )
+        
+        # Add CORS headers explicitly
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        
+        return response
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
