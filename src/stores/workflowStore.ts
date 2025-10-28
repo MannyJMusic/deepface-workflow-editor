@@ -317,8 +317,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
           const workflowData = JSON.stringify(currentWorkflow, null, 2)
           
           // Use Electron's file dialog if available
-          if (globalThis.electronAPI) {
-            const result = await globalThis.electronAPI.showSaveDialog({
+          if (window.electronAPI) {
+            const result = await window.electronAPI.showSaveDialog({
               title: 'Save Workflow',
               defaultPath: `${currentWorkflow.name || 'workflow'}.json`,
               filters: [
@@ -328,7 +328,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
             })
             
             if (!result.canceled && result.filePath) {
-              await globalThis.electronAPI.writeFile(result.filePath, workflowData)
+              await window.electronAPI.writeFile(result.filePath, workflowData)
               console.log('Workflow saved to:', result.filePath)
             }
           } else {
@@ -353,8 +353,8 @@ export const useWorkflowStore = create<WorkflowStore>()(
           let workflowData: string
           
           // Use Electron's file dialog if available
-          if (globalThis.electronAPI) {
-            const result = await globalThis.electronAPI.showOpenDialog({
+          if (window.electronAPI) {
+            const result = await window.electronAPI.showOpenDialog({
               title: 'Load Workflow',
               filters: [
                 { name: 'JSON Files', extensions: ['json'] },
@@ -364,7 +364,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
             })
             
             if (!result.canceled && result.filePaths.length > 0) {
-              workflowData = await globalThis.electronAPI.readFile(result.filePaths[0])
+              workflowData = await window.electronAPI.readFile(result.filePaths[0])
             } else {
               return
             }

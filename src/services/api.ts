@@ -739,6 +739,20 @@ class ApiClient {
       onError(error instanceof Error ? error.message : 'Unknown error')
     }
   }
+
+  // Workspace validation
+  async validateWorkspace(workspacePath: string): Promise<{
+    success: boolean
+    isValid: boolean
+    message: string
+    missingDirs: string[]
+    faceCount: number
+    hasVideoFiles: boolean
+    hasAlignedDir: boolean
+  }> {
+    const response = await this.http.post('/face-editor/validate-workspace', workspacePath)
+    return response.data
+  }
 }
 
 export const apiClient = new ApiClient()

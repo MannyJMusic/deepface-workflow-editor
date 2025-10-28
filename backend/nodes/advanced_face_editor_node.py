@@ -25,6 +25,9 @@ class AdvancedFaceEditorNode(BaseNode):
     
     def __init__(self, node: WorkflowNode):
         super().__init__(node)
+        # Initialize detection profiles storage
+        self.detection_profiles = {"default": []}
+        self.current_profile = "default"
         
     def get_required_parameters(self) -> list:
         return ["input_dir"]
@@ -547,6 +550,304 @@ class AdvancedFaceEditorNode(BaseNode):
             await self.log_message("error", f"Failed to create Machine Video Editor interface: {str(e)}")
             return {"success": False, "error": str(e)}
     
+    # Detection Profile Management Methods
+    async def create_detection_profile(self, name: str, settings: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new detection profile"""
+        try:
+            if name in self.detection_profiles:
+                return {"success": False, "message": f"Profile '{name}' already exists"}
+            
+            self.detection_profiles[name] = {
+                "settings": settings,
+                "selected_faces": [],
+                "created_at": asyncio.get_event_loop().time()
+            }
+            
+            await self.log_message("info", f"Created detection profile: {name}")
+            return {"success": True, "message": f"Profile '{name}' created successfully"}
+            
+        except Exception as e:
+            error_msg = f"Failed to create profile '{name}': {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def delete_detection_profile(self, name: str) -> Dict[str, Any]:
+        """Delete a detection profile"""
+        try:
+            if name == "default":
+                return {"success": False, "message": "Cannot delete default profile"}
+            
+            if name not in self.detection_profiles:
+                return {"success": False, "message": f"Profile '{name}' does not exist"}
+            
+            del self.detection_profiles[name]
+            
+            # Switch to default if current profile was deleted
+            if self.current_profile == name:
+                self.current_profile = "default"
+            
+            await self.log_message("info", f"Deleted detection profile: {name}")
+            return {"success": True, "message": f"Profile '{name}' deleted successfully"}
+            
+        except Exception as e:
+            error_msg = f"Failed to delete profile '{name}': {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def reset_detection_profile(self, name: str) -> Dict[str, Any]:
+        """Reset a detection profile to defaults"""
+        try:
+            if name not in self.detection_profiles:
+                return {"success": False, "message": f"Profile '{name}' does not exist"}
+            
+            # Reset to default settings
+            self.detection_profiles[name] = {
+                "settings": {
+                    "face_type": "full_face",
+                    "detection_model": "VGGFace2",
+                    "similarity_threshold": 0.6,
+                    "eyebrow_expand_mod": 1
+                },
+                "selected_faces": [],
+                "created_at": asyncio.get_event_loop().time()
+            }
+            
+            await self.log_message("info", f"Reset detection profile: {name}")
+            return {"success": True, "message": f"Profile '{name}' reset to defaults"}
+            
+        except Exception as e:
+            error_msg = f"Failed to reset profile '{name}': {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def get_detection_profiles(self) -> Dict[str, Any]:
+        """Get all detection profiles"""
+        try:
+            profiles = list(self.detection_profiles.keys())
+            return {
+                "success": True,
+                "profiles": profiles,
+                "current_profile": self.current_profile
+            }
+        except Exception as e:
+            error_msg = f"Failed to get profiles: {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def set_current_profile(self, name: str) -> Dict[str, Any]:
+        """Set the current detection profile"""
+        try:
+            if name not in self.detection_profiles:
+                return {"success": False, "message": f"Profile '{name}' does not exist"}
+            
+            self.current_profile = name
+            await self.log_message("info", f"Switched to detection profile: {name}")
+            return {"success": True, "message": f"Switched to profile '{name}'"}
+            
+        except Exception as e:
+            error_msg = f"Failed to set current profile '{name}': {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def add_faces_to_profile(self, profile_name: str, face_ids: List[str]) -> Dict[str, Any]:
+        """Add faces to a detection profile"""
+        try:
+            if profile_name not in self.detection_profiles:
+                return {"success": False, "message": f"Profile '{profile_name}' does not exist"}
+            
+            profile = self.detection_profiles[profile_name]
+            profile["selected_faces"].extend(face_ids)
+            # Remove duplicates
+            profile["selected_faces"] = list(set(profile["selected_faces"]))
+            
+            await self.log_message("info", f"Added {len(face_ids)} faces to profile '{profile_name}'")
+            return {"success": True, "message": f"Added {len(face_ids)} faces to profile"}
+            
+        except Exception as e:
+            error_msg = f"Failed to add faces to profile '{profile_name}': {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def remove_faces_from_profile(self, profile_name: str, face_ids: List[str]) -> Dict[str, Any]:
+        """Remove faces from a detection profile"""
+        try:
+            if profile_name not in self.detection_profiles:
+                return {"success": False, "message": f"Profile '{profile_name}' does not exist"}
+            
+            profile = self.detection_profiles[profile_name]
+            profile["selected_faces"] = [fid for fid in profile["selected_faces"] if fid not in face_ids]
+            
+            await self.log_message("info", f"Removed {len(face_ids)} faces from profile '{profile_name}'")
+            return {"success": True, "message": f"Removed {len(face_ids)} faces from profile"}
+            
+        except Exception as e:
+            error_msg = f"Failed to remove faces from profile '{profile_name}': {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+
+    # XSeg Editor Management Methods
+    async def launch_xseg_editor(self, input_dir: str) -> Dict[str, Any]:
+        """Launch XSeg editor as a subprocess"""
+        try:
+            await self.log_message("info", "Launching XSeg Editor...")
+            
+            # Find the XSeg editor script
+            xseg_script_path = self._find_xseg_editor_script()
+            if not xseg_script_path:
+                return {"success": False, "message": "XSeg editor script not found"}
+            
+            # Launch XSeg editor as subprocess
+            process = await asyncio.create_subprocess_exec(
+                sys.executable,
+                str(xseg_script_path),
+                input_dir,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=str(Path(input_dir).parent)
+            )
+            
+            # Store process reference for monitoring
+            self.xseg_process = process
+            
+            # Start monitoring the process
+            asyncio.create_task(self._monitor_xseg_process(process))
+            
+            await self.log_message("info", f"XSeg Editor launched with PID: {process.pid}")
+            return {
+                "success": True,
+                "message": "XSeg Editor launched successfully",
+                "pid": process.pid
+            }
+            
+        except Exception as e:
+            error_msg = f"Failed to launch XSeg Editor: {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def stop_xseg_editor(self) -> Dict[str, Any]:
+        """Stop the XSeg editor process"""
+        try:
+            if not hasattr(self, 'xseg_process') or not self.xseg_process:
+                return {"success": False, "message": "No XSeg editor process running"}
+            
+            process = self.xseg_process
+            process.terminate()
+            
+            # Wait for graceful shutdown
+            try:
+                await asyncio.wait_for(process.wait(), timeout=5.0)
+            except asyncio.TimeoutError:
+                # Force kill if it doesn't stop gracefully
+                process.kill()
+                await process.wait()
+            
+            self.xseg_process = None
+            await self.log_message("info", "XSeg Editor stopped")
+            return {"success": True, "message": "XSeg Editor stopped successfully"}
+            
+        except Exception as e:
+            error_msg = f"Failed to stop XSeg Editor: {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    async def get_xseg_status(self) -> Dict[str, Any]:
+        """Get XSeg editor process status"""
+        try:
+            if not hasattr(self, 'xseg_process') or not self.xseg_process:
+                return {
+                    "success": True,
+                    "running": False,
+                    "message": "No XSeg editor process"
+                }
+            
+            process = self.xseg_process
+            if process.returncode is None:
+                return {
+                    "success": True,
+                    "running": True,
+                    "pid": process.pid,
+                    "message": "XSeg Editor is running"
+                }
+            else:
+                return {
+                    "success": True,
+                    "running": False,
+                    "returncode": process.returncode,
+                    "message": "XSeg Editor has stopped"
+                }
+                
+        except Exception as e:
+            error_msg = f"Failed to get XSeg status: {str(e)}"
+            await self.log_message("error", error_msg)
+            return {"success": False, "message": error_msg}
+    
+    def _find_xseg_editor_script(self) -> Optional[Path]:
+        """Find the XSeg editor script"""
+        # Look for XSeg editor script in common locations
+        possible_paths = [
+            Path(__file__).parent.parent.parent / "deepfacelab" / "XSegEditor" / "main.py",
+            Path(__file__).parent.parent.parent / "deepfacelab" / "XSegEditor" / "xseg_editor.py",
+            Path(__file__).parent.parent.parent / "scripts" / "xseg_editor.py",
+        ]
+        
+        for path in possible_paths:
+            if path.exists():
+                return path
+        
+        return None
+    
+    async def _monitor_xseg_process(self, process: asyncio.subprocess.Process):
+        """Monitor XSeg editor process output"""
+        try:
+            while True:
+                # Read stdout
+                if process.stdout:
+                    line = await process.stdout.readline()
+                    if line:
+                        output = line.decode().strip()
+                        if output:
+                            await websocket_manager.send_console_log(
+                                self.node.id,
+                                f"[XSeg] {output}",
+                                "info"
+                            )
+                    else:
+                        break
+                
+                # Read stderr
+                if process.stderr:
+                    line = await process.stderr.readline()
+                    if line:
+                        error = line.decode().strip()
+                        if error:
+                            await websocket_manager.send_console_log(
+                                self.node.id,
+                                f"[XSeg Error] {error}",
+                                "error"
+                            )
+                    else:
+                        break
+                
+                # Check if process has ended
+                if process.returncode is not None:
+                    await websocket_manager.send_console_log(
+                        self.node.id,
+                        f"XSeg Editor process ended with code: {process.returncode}",
+                        "info"
+                    )
+                    break
+                    
+        except Exception as e:
+            await websocket_manager.send_console_log(
+                self.node.id,
+                f"Error monitoring XSeg process: {str(e)}",
+                "error"
+            )
+        finally:
+            # Clean up process reference
+            if hasattr(self, 'xseg_process') and self.xseg_process == process:
+                self.xseg_process = None
+
     def _create_machine_editor_script(self, input_path: Path, face_files: List[Path], face_type: str, detection_model: str, similarity_threshold: float) -> str:
         """Create a Machine Video Editor-style interface script"""
         return f'''

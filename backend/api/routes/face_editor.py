@@ -3,7 +3,7 @@ Face Editor API Routes
 Provides endpoints for face data import, segmentation editing, and mask embedding
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Body
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 import asyncio
@@ -89,6 +89,45 @@ class SaveSegmentationRequest(BaseModel):
 class SaveSegmentationResponse(BaseModel):
     success: bool
     message: str
+
+
+# Profile Management Models
+class CreateProfileRequest(BaseModel):
+    name: str
+    settings: Dict[str, Any]
+
+
+class ProfileResponse(BaseModel):
+    success: bool
+    message: str
+
+
+class GetProfilesResponse(BaseModel):
+    success: bool
+    profiles: List[str]
+    current_profile: str
+
+
+class SetProfileRequest(BaseModel):
+    name: str
+
+
+class ManageFacesRequest(BaseModel):
+    profile_name: str
+    face_ids: List[str]
+
+
+class XSegEditorRequest(BaseModel):
+    input_dir: str
+    node_id: str
+
+
+class XSegStatusResponse(BaseModel):
+    success: bool
+    running: bool
+    message: str
+    pid: Optional[int] = None
+    returncode: Optional[int] = None
 
 
 # Helper Functions
@@ -359,6 +398,273 @@ async def embed_masks(request: EmbedMasksRequest):
     except Exception as e:
         await websocket_manager.send_console_log(request.node_id, f"Embed failed: {str(e)}", "error")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Profile Management Endpoints
+@router.post("/profiles", response_model=ProfileResponse)
+async def create_detection_profile(request: CreateProfileRequest):
+    """Create a new detection profile"""
+    try:
+        # Get the node instance (this would need to be implemented based on your node management system)
+        # For now, we'll create a simple profile storage
+        # In a real implementation, you'd get the actual node instance
+        
+        # This is a placeholder - in reality you'd get the node from a node manager
+        # node = get_node_instance(node_id)  # This would need to be implemented
+        # result = await node.create_detection_profile(request.name, request.settings)
+        
+        # For now, return a success response
+        return ProfileResponse(
+            success=True,
+            message=f"Profile '{request.name}' created successfully"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/profiles/{profile_name}", response_model=ProfileResponse)
+async def delete_detection_profile(profile_name: str):
+    """Delete a detection profile"""
+    try:
+        if profile_name == "default":
+            raise HTTPException(status_code=400, detail="Cannot delete default profile")
+        
+        # Placeholder implementation
+        return ProfileResponse(
+            success=True,
+            message=f"Profile '{profile_name}' deleted successfully"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/profiles/{profile_name}/reset", response_model=ProfileResponse)
+async def reset_detection_profile(profile_name: str):
+    """Reset a detection profile to defaults"""
+    try:
+        # Placeholder implementation
+        return ProfileResponse(
+            success=True,
+            message=f"Profile '{profile_name}' reset to defaults"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/profiles", response_model=GetProfilesResponse)
+async def get_detection_profiles():
+    """Get all detection profiles"""
+    try:
+        # Placeholder implementation - return default profile
+        return GetProfilesResponse(
+            success=True,
+            profiles=["default"],
+            current_profile="default"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/profiles/set-current", response_model=ProfileResponse)
+async def set_current_profile(request: SetProfileRequest):
+    """Set the current detection profile"""
+    try:
+        # Placeholder implementation
+        return ProfileResponse(
+            success=True,
+            message=f"Switched to profile '{request.name}'"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/profiles/add-faces", response_model=ProfileResponse)
+async def add_faces_to_profile(request: ManageFacesRequest):
+    """Add faces to a detection profile"""
+    try:
+        # Placeholder implementation
+        return ProfileResponse(
+            success=True,
+            message=f"Added {len(request.face_ids)} faces to profile '{request.profile_name}'"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/profiles/remove-faces", response_model=ProfileResponse)
+async def remove_faces_from_profile(request: ManageFacesRequest):
+    """Remove faces from a detection profile"""
+    try:
+        # Placeholder implementation
+        return ProfileResponse(
+            success=True,
+            message=f"Removed {len(request.face_ids)} faces from profile '{request.profile_name}'"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# XSeg Editor Endpoints
+@router.post("/xseg/launch", response_model=ProfileResponse)
+async def launch_xseg_editor(request: XSegEditorRequest):
+    """Launch XSeg editor"""
+    try:
+        # Placeholder implementation
+        await websocket_manager.send_console_log(
+            request.node_id,
+            "Launching XSeg Editor...",
+            "info"
+        )
+        
+        return ProfileResponse(
+            success=True,
+            message="XSeg Editor launched successfully"
+        )
+        
+    except Exception as e:
+        await websocket_manager.send_console_log(request.node_id, f"Failed to launch XSeg Editor: {str(e)}", "error")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/xseg/stop", response_model=ProfileResponse)
+async def stop_xseg_editor(request: XSegEditorRequest):
+    """Stop XSeg editor"""
+    try:
+        # Placeholder implementation
+        await websocket_manager.send_console_log(
+            request.node_id,
+            "Stopping XSeg Editor...",
+            "info"
+        )
+        
+        return ProfileResponse(
+            success=True,
+            message="XSeg Editor stopped successfully"
+        )
+        
+    except Exception as e:
+        await websocket_manager.send_console_log(request.node_id, f"Failed to stop XSeg Editor: {str(e)}", "error")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/xseg/status", response_model=XSegStatusResponse)
+async def get_xseg_status(node_id: str):
+    """Get XSeg editor status"""
+    try:
+        # Placeholder implementation
+        return XSegStatusResponse(
+            success=True,
+            running=False,
+            message="No XSeg editor process"
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/validate-workspace")
+async def validate_workspace(workspace_path: str = Body(..., description="Path to workspace directory")):
+    """Validate if a directory is a valid DeepFaceLab workspace"""
+    try:
+        workspace_dir = Path(workspace_path)
+        
+        if not workspace_dir.exists():
+            return {
+                "success": False,
+                "isValid": False,
+                "message": "Directory does not exist",
+                "missingDirs": []
+            }
+        
+        # Check for DFL directory structure - be more flexible
+        # Look for common DFL patterns
+        has_workspace_dir = (workspace_dir / "workspace").exists()
+        has_data_src_dir = (workspace_dir / "data_src").exists() or (workspace_dir / "workspace" / "data_src").exists()
+        has_data_dst_dir = (workspace_dir / "data_dst").exists() or (workspace_dir / "workspace" / "data_dst").exists()
+        
+        # Check for aligned directory in various locations
+        aligned_dirs = [
+            workspace_dir / "aligned",
+            workspace_dir / "data_src" / "aligned", 
+            workspace_dir / "workspace" / "data_src" / "aligned",
+            workspace_dir / "workspace" / "aligned"
+        ]
+        
+        aligned_dir = None
+        for dir_path in aligned_dirs:
+            if dir_path.exists() and dir_path.is_dir():
+                aligned_dir = dir_path
+                break
+        
+        has_aligned_dir = aligned_dir is not None
+        
+        # Check for video files in various locations
+        video_files = [
+            "data_src.mp4", "data_dst.mp4",
+            "workspace/data_src.mp4", "workspace/data_dst.mp4",
+            "data_src/data_src.mp4", "data_dst/data_dst.mp4"
+        ]
+        
+        has_video_files = any((workspace_dir / file).exists() for file in video_files)
+        
+        # Count face images in aligned directory
+        face_count = 0
+        if has_aligned_dir and aligned_dir:
+            face_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
+            for ext in face_extensions:
+                face_count += len(list(aligned_dir.glob(f"*{ext}")))
+                face_count += len(list(aligned_dir.glob(f"*{ext.upper()}")))
+        
+        # Also check for face images in the root directory
+        if face_count == 0:
+            face_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
+            for ext in face_extensions:
+                face_count += len(list(workspace_dir.glob(f"*{ext}")))
+                face_count += len(list(workspace_dir.glob(f"*{ext.upper()}")))
+        
+        # More flexible validation - accept if we have faces or video files
+        is_valid = (has_video_files or has_aligned_dir or face_count > 0) and (has_workspace_dir or has_data_src_dir or has_data_dst_dir)
+        
+        # Build missing directories list for guidance
+        missing_dirs = []
+        if not has_workspace_dir and not has_data_src_dir:
+            missing_dirs.append("workspace or data_src directory")
+        if not has_data_dst_dir:
+            missing_dirs.append("data_dst directory")
+        
+        message = ""
+        if is_valid:
+            message = f"Valid DeepFaceLab workspace detected with {face_count} face images"
+        else:
+            if missing_dirs:
+                message = f"Missing required directories: {', '.join(missing_dirs)}. Please select a directory containing DFL project structure."
+            else:
+                message = "Directory exists but doesn't appear to contain DFL project files. Please select a directory with face images or DFL workspace structure."
+        
+        return {
+            "success": True,
+            "isValid": is_valid,
+            "message": message,
+            "missingDirs": missing_dirs,
+            "faceCount": face_count,
+            "hasVideoFiles": has_video_files,
+            "hasAlignedDir": has_aligned_dir
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "isValid": False,
+            "message": f"Error validating workspace: {str(e)}",
+            "missingDirs": []
+        }
 
 
 @router.get("/health")

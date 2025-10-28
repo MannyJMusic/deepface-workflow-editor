@@ -54,6 +54,17 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
   const [drawPoints, setDrawPoints] = useState<PolygonPoint[]>([])
   const [tool, setTool] = useState<'select' | 'draw' | 'add' | 'remove'>('select')
   const [showLandmarks, setShowLandmarks] = useState(false)
+  
+  // Eyebrow region visualization
+  const [showEyebrowPreview, setShowEyebrowPreview] = useState(false)
+  const [currentEyebrowExpandMod, setCurrentEyebrowExpandMod] = useState(eyebrowExpandMod)
+  
+  // Tool palette state
+  const [showGrid, setShowGrid] = useState(false)
+  const [snapToGrid, setSnapToGrid] = useState(false)
+  const [gridSize, setGridSize] = useState(20)
+  const [zoomLevel, setZoomLevel] = useState(1)
+  const [isPanning, setIsPanning] = useState(false)
 
   // Initialize fabric canvas
   useEffect(() => {
@@ -221,6 +232,66 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
     handlePolygonModified()
   }, [eyebrowExpandMod, handlePolygonModified])
 
+  // Handle eyebrow region expansion preview
+  const handleEyebrowExpand = useCallback((expandMod: number) => {
+    if (!fabricCanvasRef.current || !landmarks || landmarks.length < 68) return
+    
+    setCurrentEyebrowExpandMod(expandMod)
+    
+    // Find eyebrow landmarks (typically points 17-26 for left eyebrow, 22-26 for right eyebrow)
+    const leftEyebrow = landmarks.slice(17, 22) // Left eyebrow
+    const rightEyebrow = landmarks.slice(22, 27) // Right eyebrow
+    
+    // Create expanded eyebrow region
+    const expandedRegion = expandEyebrowRegion(leftEyebrow.concat(rightEyebrow), expandMod)
+    
+    // Create preview polygon for eyebrow region
+    if (fabricCanvasRef.current) {
+      const imageWidth = imageRef.current?.width! * imageRef.current?.scaleX!
+      const imageHeight = imageRef.current?.height! * imageRef.current?.scaleY!
+      
+      const eyebrowPolygon = createPolygon(fabricCanvasRef.current, expandedRegion, {
+        fill: 'rgba(255, 255, 0, 0.3)',
+        stroke: '#ffff00',
+        strokeWidth: 2,
+        selectable: false,
+        evented: false
+      })
+      
+      // Remove existing eyebrow preview
+      const existingPreview = fabricCanvasRef.current.getObjects().find(obj => 
+        obj.name === 'eyebrow-preview'
+      )
+      if (existingPreview) {
+        fabricCanvasRef.current.remove(existingPreview)
+      }
+      
+      // Add new preview
+      eyebrowPolygon.name = 'eyebrow-preview'
+      fabricCanvasRef.current.add(eyebrowPolygon)
+      fabricCanvasRef.current.renderAll()
+    }
+  }, [landmarks])
+
+  // Toggle eyebrow preview
+  const toggleEyebrowPreview = useCallback(() => {
+    if (!showEyebrowPreview) {
+      handleEyebrowExpand(currentEyebrowExpandMod)
+    } else {
+      // Remove eyebrow preview
+      if (fabricCanvasRef.current) {
+        const existingPreview = fabricCanvasRef.current.getObjects().find(obj => 
+          obj.name === 'eyebrow-preview'
+        )
+        if (existingPreview) {
+          fabricCanvasRef.current.remove(existingPreview)
+          fabricCanvasRef.current.renderAll()
+        }
+      }
+    }
+    setShowEyebrowPreview(!showEyebrowPreview)
+  }, [showEyebrowPreview, currentEyebrowExpandMod, handleEyebrowExpand])
+
   // Reset polygon to initial
   const resetPolygon = useCallback(() => {
     if (!fabricCanvasRef.current || !imageRef.current || !initialPolygon) return
@@ -327,6 +398,33 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
         >
           Apply Eyebrow Expansion ({eyebrowExpandMod}x)
         </button>
+        
+        {/* Eyebrow Preview Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            className={`px-3 py-1 rounded ${showEyebrowPreview ? 'bg-yellow-600' : 'bg-gray-700'}`}
+            onClick={toggleEyebrowPreview}
+            disabled={!landmarks || landmarks.length < 68}
+          >
+            {showEyebrowPreview ? 'Hide' : 'Show'} Eyebrow Preview
+          </button>
+          {showEyebrowPreview && (
+            <div className="flex items-center gap-2">
+              <label className="text-white text-sm">Expand:</label>
+              <input
+                type="range"
+                min="1"
+                max="4"
+                step="0.1"
+                value={currentEyebrowExpandMod}
+                onChange={(e) => handleEyebrowExpand(Number(e.target.value))}
+                className="w-20"
+              />
+              <span className="text-white text-sm">{currentEyebrowExpandMod.toFixed(1)}x</span>
+            </div>
+          )}
+        </div>
+        
         <div className="border-l border-gray-600 h-6 mx-2" />
         <label className="flex items-center gap-2">
           <input
@@ -336,6 +434,67 @@ export const SegmentationEditor: React.FC<SegmentationEditorProps> = ({
           />
           <span className="text-sm">Show Landmarks</span>
         </label>
+        
+        {/* Tool Palette Controls */}
+        <div className="border-l border-gray-600 h-6 mx-2" />
+        <div className="flex items-center gap-2">
+          <button
+            className={`px-3 py-1 rounded ${isPanning ? 'bg-blue-600' : 'bg-gray-700'}`}
+            onClick={() => setIsPanning(!isPanning)}
+          >
+            Pan
+          </button>
+          <div className="flex items-center gap-2">
+            <label className="text-white text-sm">Zoom:</label>
+            <input
+              type="range"
+              min="0.1"
+              max="3"
+              step="0.1"
+              value={zoomLevel}
+              onChange={(e) => setZoomLevel(Number(e.target.value))}
+              className="w-20"
+            />
+            <span className="text-white text-sm">{Math.round(zoomLevel * 100)}%</span>
+          </div>
+        </div>
+        
+        <div className="border-l border-gray-600 h-6 mx-2" />
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={showGrid}
+              onChange={(e) => setShowGrid(e.target.checked)}
+            />
+            <span className="text-white text-sm">Grid</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={snapToGrid}
+              onChange={(e) => setSnapToGrid(e.target.checked)}
+              disabled={!showGrid}
+            />
+            <span className="text-white text-sm">Snap</span>
+          </label>
+          {showGrid && (
+            <div className="flex items-center gap-2">
+              <label className="text-white text-sm">Size:</label>
+              <input
+                type="range"
+                min="10"
+                max="50"
+                step="5"
+                value={gridSize}
+                onChange={(e) => setGridSize(Number(e.target.value))}
+                className="w-16"
+              />
+              <span className="text-white text-sm">{gridSize}px</span>
+            </div>
+          )}
+        </div>
+        
         <div className="ml-auto flex gap-2">
           <button
             className="px-4 py-1 rounded bg-blue-600 hover:bg-blue-700"

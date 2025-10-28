@@ -3,8 +3,9 @@ import { useWorkflowStore } from '../../stores/workflowStore'
 import { apiClient } from '../../services/api'
 import OptimizedFaceGrid from './OptimizedFaceGrid'
 import DetectionPanelNew from './DetectionPanelNew'
-import ConsolePanel from './ConsolePanel'
+import ConsolePanel, { ProcessInfo, LogEntry } from './ConsolePanel'
 import FaceEditorModal from './FaceEditorModal'
+import FileTreePanel from './FileTreePanel'
 
 interface FaceImage {
   id: string
@@ -45,9 +46,11 @@ const AdvancedFaceEditorView: React.FC = () => {
   const [faceDataImported, setFaceDataImported] = useState(false)
   const [showConsole, setShowConsole] = useState(false)
   const [showDetectionPanel, setShowDetectionPanel] = useState(true)
+  const [showFileTree, setShowFileTree] = useState(true)
   const [selectedFaceId, setSelectedFaceId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [consoleLogs, setConsoleLogs] = useState<string[]>([])
+  const [consoleLogs, setConsoleLogs] = useState<LogEntry[]>([])
+  const [processes, setProcesses] = useState<ProcessInfo[]>([])
 
   // Faces Editor State Management
   const [detectionProfiles, setDetectionProfiles] = useState<string[]>(['default'])
@@ -79,10 +82,91 @@ const AdvancedFaceEditorView: React.FC = () => {
     }
   }, [currentNode])
 
+  // Initialize sample processes and logs for demonstration
+  useEffect(() => {
+    // Add sample processes
+    setProcesses([
+      {
+        id: 'xseg-editor',
+        name: 'XSeg Editor',
+        status: 'stopped',
+        output: []
+      },
+      {
+        id: 'face-detection',
+        name: 'Face Detection',
+        status: 'running',
+        pid: 12345,
+        startTime: new Date(Date.now() - 30000),
+        output: []
+      },
+      {
+        id: 'segmentation-model',
+        name: 'Segmentation Model',
+        status: 'completed',
+        startTime: new Date(Date.now() - 120000),
+        endTime: new Date(Date.now() - 60000),
+        output: []
+      }
+    ])
+
+    // Add sample logs
+    const sampleLogs: LogEntry[] = [
+      {
+        id: 'log-1',
+        timestamp: new Date(Date.now() - 120000),
+        level: 'info',
+        message: 'Advanced Face Editor initialized',
+        processId: 'face-detection',
+        processName: 'Face Detection'
+      },
+      {
+        id: 'log-2',
+        timestamp: new Date(Date.now() - 90000),
+        level: 'success',
+        message: 'Segmentation model loaded successfully',
+        processId: 'segmentation-model',
+        processName: 'Segmentation Model'
+      },
+      {
+        id: 'log-3',
+        timestamp: new Date(Date.now() - 60000),
+        level: 'info',
+        message: 'Processing face images...',
+        processId: 'face-detection',
+        processName: 'Face Detection'
+      },
+      {
+        id: 'log-4',
+        timestamp: new Date(Date.now() - 30000),
+        level: 'warning',
+        message: 'Low similarity threshold detected for some faces',
+        processId: 'face-detection',
+        processName: 'Face Detection'
+      },
+      {
+        id: 'log-5',
+        timestamp: new Date(Date.now() - 10000),
+        level: 'info',
+        message: 'Face detection completed',
+        processId: 'face-detection',
+        processName: 'Face Detection'
+      }
+    ]
+    setConsoleLogs(sampleLogs)
+  }, [])
+
   // Add console log message
-  const addConsoleLog = useCallback((message: string) => {
-    const timestamp = new Date().toLocaleTimeString()
-    setConsoleLogs(prev => [...prev, `[${timestamp}] ${message}`])
+  const addConsoleLog = useCallback((message: string, level: LogEntry['level'] = 'info', processId?: string, processName?: string) => {
+    const logEntry: LogEntry = {
+      id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date(),
+      level,
+      message,
+      processId,
+      processName
+    }
+    setConsoleLogs(prev => [...prev, logEntry])
   }, [])
 
   // Store WebSocket connection in a ref so it can be accessed by other functions
@@ -419,6 +503,76 @@ const AdvancedFaceEditorView: React.FC = () => {
     setConsoleLogs([])
   }, [])
 
+  // Process management functions
+  const handleStartProcess = useCallback(async (processId: string) => {
+    try {
+      addConsoleLog(`Starting process: ${processId}`, 'info', processId, processId)
+      
+      // Update process status
+      setProcesses(prev => prev.map(p => 
+        p.id === processId ? { ...p, status: 'running', startTime: new Date() } : p
+      ))
+      
+      // Here you would call the actual API to start the process
+      // await apiClient.startProcess(processId)
+      
+    } catch (error) {
+      addConsoleLog(`Failed to start process ${processId}: ${error}`, 'error', processId, processId)
+    }
+  }, [addConsoleLog])
+
+  const handleStopProcess = useCallback(async (processId: string) => {
+    try {
+      addConsoleLog(`Stopping process: ${processId}`, 'info', processId, processId)
+      
+      // Update process status
+      setProcesses(prev => prev.map(p => 
+        p.id === processId ? { ...p, status: 'stopped', endTime: new Date() } : p
+      ))
+      
+      // Here you would call the actual API to stop the process
+      // await apiClient.stopProcess(processId)
+      
+    } catch (error) {
+      addConsoleLog(`Failed to stop process ${processId}: ${error}`, 'error', processId, processId)
+    }
+  }, [addConsoleLog])
+
+  const handleRestartProcess = useCallback(async (processId: string) => {
+    try {
+      addConsoleLog(`Restarting process: ${processId}`, 'info', processId, processId)
+      
+      // Stop first, then start
+      await handleStopProcess(processId)
+      setTimeout(() => handleStartProcess(processId), 1000)
+      
+    } catch (error) {
+      addConsoleLog(`Failed to restart process ${processId}: ${error}`, 'error', processId, processId)
+    }
+  }, [addConsoleLog, handleStopProcess, handleStartProcess])
+
+  const handleExportLogs = useCallback(() => {
+    try {
+      const logText = consoleLogs.map(log => 
+        `[${log.timestamp.toISOString()}] [${log.level.toUpperCase()}] ${log.processName ? `[${log.processName}] ` : ''}${log.message}`
+      ).join('\n')
+      
+      const blob = new Blob([logText], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `console-logs-${new Date().toISOString().split('T')[0]}.txt`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      
+      addConsoleLog('Console logs exported successfully', 'success')
+    } catch (error) {
+      addConsoleLog(`Failed to export logs: ${error}`, 'error')
+    }
+  }, [consoleLogs, addConsoleLog])
+
   // Detection Profile Handlers
   const handleAddDetectionProfile = useCallback(async (name: string) => {
     if (!currentNode) return
@@ -637,6 +791,74 @@ const AdvancedFaceEditorView: React.FC = () => {
     // XSeg editor opening would be implemented here
   }, [addConsoleLog])
 
+  // File Tree Action Handlers
+  const handleOpenImages = useCallback(async (path: string) => {
+    console.log('Opening images from path:', path)
+    addConsoleLog(`Opening images from: ${path}`)
+    
+    // Load faces from the specified directory
+    await loadFacesFromDirectory(path)
+  }, [addConsoleLog])
+
+  const handleOpenSlideshow = useCallback(() => {
+    addConsoleLog('Opening slideshow mode...')
+    // TODO: Implement slideshow mode
+  }, [addConsoleLog])
+
+  const handleRefreshTree = useCallback(() => {
+    addConsoleLog('Refreshing project structure...')
+    // Trigger a reload of face images
+    if (currentNode?.parameters?.input_dir) {
+      loadFacesFromDirectory(currentNode.parameters.input_dir)
+    }
+  }, [addConsoleLog, currentNode])
+
+  const handleWorkspaceSelect = useCallback((workspacePath: string, faceCount?: number) => {
+    console.log('Workspace selected:', workspacePath, 'Face count:', faceCount)
+    addConsoleLog(`Workspace selected: ${workspacePath}${faceCount ? ` (${faceCount} faces detected)` : ''}`)
+    
+    // Just log the workspace selection - don't update detection panel
+    // The detection panel should be independent
+  }, [addConsoleLog])
+
+  // Load faces from a specific directory
+  const loadFacesFromDirectory = useCallback(async (directoryPath: string) => {
+    if (!currentNode) return
+
+    setLoading(true)
+    addConsoleLog(`Loading faces from: ${directoryPath}`, 'info')
+
+    try {
+      // Update the node parameters with the new input directory
+      updateNode(currentNode.id, { 
+        parameters: { 
+          ...currentNode.parameters, 
+          input_dir: directoryPath 
+        } 
+      })
+
+      // Call the backend to get face images from the directory
+      const response = await apiClient.getFaceImages(currentNode.id, directoryPath)
+
+      if (response.success && response.face_images) {
+        console.log('Face images loaded:', response.face_images.length)
+        console.log('First face image:', response.face_images[0])
+        setFaceImages(response.face_images)
+        addConsoleLog(`Loaded ${response.face_images.length} faces from directory`, 'success')
+      } else {
+        console.log('Failed to load faces - response:', response)
+        addConsoleLog('Failed to load faces from directory', 'error')
+        setFaceImages([])
+      }
+    } catch (error) {
+      console.error('Error loading faces:', error)
+      addConsoleLog(`Error loading faces: ${error}`, 'error')
+      setFaceImages([])
+    } finally {
+      setLoading(false)
+    }
+  }, [currentNode, addConsoleLog, updateNode])
+
   return (
     <div className="h-full w-full flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       {/* Top Toolbar */}
@@ -700,6 +922,16 @@ const AdvancedFaceEditorView: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
             <button
+              onClick={() => setShowFileTree(!showFileTree)}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
+                showFileTree
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              Explorer
+            </button>
+            <button
               onClick={() => setShowConsole(!showConsole)}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
                 showConsole
@@ -748,6 +980,20 @@ const AdvancedFaceEditorView: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
+        {/* File Tree Panel */}
+        {showFileTree && (
+          <div className="w-80 flex-shrink-0">
+                        <FileTreePanel
+                            inputDir={currentNode?.parameters?.input_dir}
+                            faceCount={faceImages.length}
+                            onOpenImages={handleOpenImages}
+                            onOpenSlideshow={handleOpenSlideshow}
+                            onRefresh={handleRefreshTree}
+                            onWorkspaceSelect={handleWorkspaceSelect}
+                        />
+          </div>
+        )}
+
         {/* Face Grid */}
         <div className="flex-1 overflow-hidden">
           <OptimizedFaceGrid
@@ -822,13 +1068,18 @@ const AdvancedFaceEditorView: React.FC = () => {
         )}
       </div>
 
-      {/* Console Panel */}
-      {showConsole && (
-        <ConsolePanel
-          logs={consoleLogs}
-          onClearLogs={clearConsoleLogs}
-        />
-      )}
+            {/* Console Panel */}
+            {showConsole && (
+                <ConsolePanel
+                    logs={consoleLogs}
+                    processes={processes}
+                    onClearLogs={clearConsoleLogs}
+                    onStartProcess={handleStartProcess}
+                    onStopProcess={handleStopProcess}
+                    onRestartProcess={handleRestartProcess}
+                    onExportLogs={handleExportLogs}
+                />
+            )}
 
       {/* Face Editor Modal */}
       {selectedFaceId && currentNode && (
